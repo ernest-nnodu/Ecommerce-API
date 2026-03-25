@@ -1,0 +1,7 @@
+spring:
+    application:
+        name: Ecommerce-API
+
+application:
+    title: Ecommerce-API
+    version: 1.0
