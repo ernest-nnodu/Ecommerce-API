@@ -2,10 +2,10 @@ package com.jackalcode.ecommerceapi.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,6 +23,17 @@ public class Cart {
     @OneToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
+
+    @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER)
+    private List<CartItem> cartItems =  new ArrayList<>();
+
+    public void addItem(CartItem cartItem) {
+        cartItems.add(cartItem);
+    }
+
+    public void removeItem(CartItem cartItem) {
+        cartItems.remove(cartItem);
+    }
 
     @Override
     public boolean equals(Object o) {

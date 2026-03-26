@@ -1,9 +1,6 @@
 package com.jackalcode.ecommerceapi;
 
-import com.jackalcode.ecommerceapi.entity.Cart;
-import com.jackalcode.ecommerceapi.entity.Category;
-import com.jackalcode.ecommerceapi.entity.Customer;
-import com.jackalcode.ecommerceapi.entity.Product;
+import com.jackalcode.ecommerceapi.entity.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -41,6 +38,18 @@ public class EcommerceApiApplication {
         cart.setId(1L);
         cart.setCustomer(customer);
         System.out.println(cart);
+
+        var cartItem = CartItem.builder()
+                .id(1L)
+                .cart(cart)
+                .product(product)
+                .quantity(10)
+                .build();
+        System.out.println(cartItem);
+
+        cart.addItem(cartItem);
+        System.out.println(cart);
+
     }
 
 }
