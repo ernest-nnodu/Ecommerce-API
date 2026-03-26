@@ -2,6 +2,7 @@ package com.jackalcode.ecommerceapi;
 
 import com.jackalcode.ecommerceapi.entity.Category;
 import com.jackalcode.ecommerceapi.entity.Customer;
+import com.jackalcode.ecommerceapi.entity.Product;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -21,8 +22,19 @@ public class EcommerceApiApplication {
                 .build();
         System.out.println(customer);
 
-        var category = new Category(1, "Category 1");
+        var category = new Category();
+        category.setId(1L);
+        category.setName("Category");
         System.out.println(category);
+
+        var product = Product.builder()
+                .id(1L)
+                .category(category)
+                .name("Product")
+                .quantityInStock(30L)
+                .price(100.0)
+                .build();
+        System.out.println(product);
     }
 
 }

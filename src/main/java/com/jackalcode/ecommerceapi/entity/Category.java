@@ -3,7 +3,9 @@ package com.jackalcode.ecommerceapi.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "categories")
@@ -21,6 +23,10 @@ public class Category {
 
     @Column(name = "name")
     private String name;
+
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    Set<Product> products = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
