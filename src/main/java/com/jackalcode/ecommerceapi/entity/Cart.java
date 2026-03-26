@@ -5,9 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "carts")
@@ -25,7 +23,7 @@ public class Cart {
     private Customer customer;
 
     @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER)
-    private List<CartItem> cartItems =  new ArrayList<>();
+    private Set<CartItem> cartItems =  new HashSet<>();
 
     public void addItem(CartItem cartItem) {
         cartItems.add(cartItem);
