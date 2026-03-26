@@ -31,6 +31,9 @@ public class Customer {
     @Column(name = "password")
     private String password;
 
+    @OneToOne(mappedBy = "customer")
+    private Cart cart;
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
