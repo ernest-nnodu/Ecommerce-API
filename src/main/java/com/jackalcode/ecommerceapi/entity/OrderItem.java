@@ -9,7 +9,6 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "order_items")
 public class OrderItem {
@@ -44,4 +43,13 @@ public class OrderItem {
         return Objects.hashCode(id);
     }
 
+    @Override
+    public String toString() {
+        return "OrderItem{" + "id=" + id +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                ", order=" + order.getId() +
+                ", product=" + product +
+                '}';
+    }
 }
