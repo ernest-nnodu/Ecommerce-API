@@ -1,6 +1,7 @@
 package com.jackalcode.ecommerceapi;
 
 import com.jackalcode.ecommerceapi.entity.*;
+import com.jackalcode.ecommerceapi.repository.CartRepository;
 import com.jackalcode.ecommerceapi.repository.CategoryRepository;
 import com.jackalcode.ecommerceapi.repository.CustomerRepository;
 import com.jackalcode.ecommerceapi.repository.ProductRepository;
@@ -25,6 +26,10 @@ public class EcommerceApiApplication {
         var productRepository = context.getBean(ProductRepository.class);
         Product product = productRepository.findById(1L).orElseThrow();
         System.out.println(product);
+
+        var cartRepository = context.getBean(CartRepository.class);
+        Cart cart = cartRepository.findById(1L).orElseThrow();
+        System.out.println(cart);
     }
 
 }
