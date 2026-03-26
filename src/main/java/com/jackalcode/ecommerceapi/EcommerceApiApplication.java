@@ -1,11 +1,10 @@
 package com.jackalcode.ecommerceapi;
 
 import com.jackalcode.ecommerceapi.entity.*;
+import com.jackalcode.ecommerceapi.repository.CategoryRepository;
 import com.jackalcode.ecommerceapi.repository.CustomerRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.time.Instant;
 
 @SpringBootApplication
 public class EcommerceApiApplication {
@@ -17,6 +16,10 @@ public class EcommerceApiApplication {
         var userRepository = context.getBean(CustomerRepository.class);
         var customer = userRepository.findById(1L).orElseThrow();
         System.out.println(customer);
+
+        var categoryRepository = context.getBean(CategoryRepository.class);
+        Category category = categoryRepository.findById(1L).orElseThrow();
+        System.out.println(category);
     }
 
 }
