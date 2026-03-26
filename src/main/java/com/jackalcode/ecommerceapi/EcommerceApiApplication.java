@@ -1,5 +1,6 @@
 package com.jackalcode.ecommerceapi;
 
+import com.jackalcode.ecommerceapi.entity.Cart;
 import com.jackalcode.ecommerceapi.entity.Category;
 import com.jackalcode.ecommerceapi.entity.Customer;
 import com.jackalcode.ecommerceapi.entity.Product;
@@ -35,6 +36,11 @@ public class EcommerceApiApplication {
                 .price(100.0)
                 .build();
         System.out.println(product);
+
+        Cart cart = new Cart();
+        cart.setId(1L);
+        cart.setCustomer(customer);
+        System.out.println(cart);
     }
 
 }
