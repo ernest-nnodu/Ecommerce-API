@@ -5,7 +5,3 @@ spring:
         url: jdbc:mysql://localhost:3306/ecommerce?createDatabaseIfNotExist=true
         username: springstudent
         password: springstudent
-
-application:
-    title: Ecommerce-API
-    version: 1.0
