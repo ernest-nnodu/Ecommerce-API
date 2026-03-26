@@ -54,8 +54,8 @@ public class EcommerceApiApplication {
         OrderItem orderItem = new OrderItem();
         orderItem.setId(1L);
         orderItem.setProduct(product);
+        orderItem.setPrice(product.getPrice());
         orderItem.setQuantity(10);
-        System.out.println(orderItem);
 
         Order order = new Order();
         order.setId(1L);
@@ -63,6 +63,16 @@ public class EcommerceApiApplication {
         order.setDate(Instant.now());
         order.addOrderItem(orderItem);
 
+        System.out.println(orderItem);
+        System.out.println(order);
+
+        Payment payment = new Payment();
+        payment.setId(1L);
+        payment.setAmount(105.15);
+        payment.setDate(Instant.now());
+        payment.setOrder(order);
+
+        System.out.println(payment);
 
     }
 
