@@ -41,15 +41,13 @@ public class EcommerceApiApplication {
 
         var cartItem = CartItem.builder()
                 .id(1L)
-                .cart(cart)
                 .product(product)
                 .quantity(10)
                 .build();
-        System.out.println(cartItem);
 
         cart.addItem(cartItem);
+        System.out.println(cartItem);
         System.out.println(cart);
-
     }
 
 }
