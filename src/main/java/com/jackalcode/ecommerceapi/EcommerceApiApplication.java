@@ -4,6 +4,8 @@ import com.jackalcode.ecommerceapi.entity.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.time.Instant;
+
 @SpringBootApplication
 public class EcommerceApiApplication {
 
@@ -48,6 +50,20 @@ public class EcommerceApiApplication {
         cart.addItem(cartItem);
         System.out.println(cartItem);
         System.out.println(cart);
+
+        OrderItem orderItem = new OrderItem();
+        orderItem.setId(1L);
+        orderItem.setProduct(product);
+        orderItem.setQuantity(10);
+        System.out.println(orderItem);
+
+        Order order = new Order();
+        order.setId(1L);
+        order.setCustomer(customer);
+        order.setDate(Instant.now());
+        order.addOrderItem(orderItem);
+
+
     }
 
 }
