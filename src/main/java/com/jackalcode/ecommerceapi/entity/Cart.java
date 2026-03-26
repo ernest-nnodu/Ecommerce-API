@@ -22,7 +22,9 @@ public class Cart {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "cart",
+            fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CartItem> cartItems =  new HashSet<>();
 
     public void addItem(CartItem cartItem) {
