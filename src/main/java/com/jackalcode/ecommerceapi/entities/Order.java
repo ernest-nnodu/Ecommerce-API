@@ -1,13 +1,11 @@
-package com.jackalcode.ecommerceapi.entity;
+package com.jackalcode.ecommerceapi.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 

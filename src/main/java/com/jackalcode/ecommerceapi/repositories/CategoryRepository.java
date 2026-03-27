@@ -1,6 +1,6 @@
-package com.jackalcode.ecommerceapi.repository;
+package com.jackalcode.ecommerceapi.repositories;
 
-import com.jackalcode.ecommerceapi.entity.Category;
+import com.jackalcode.ecommerceapi.entities.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

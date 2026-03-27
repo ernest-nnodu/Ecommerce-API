@@ -1,4 +1,4 @@
-package com.jackalcode.ecommerceapi.entity;
+package com.jackalcode.ecommerceapi.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
