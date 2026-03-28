@@ -1,6 +1,7 @@
 package com.jackalcode.ecommerceapi.controllers;
 
 import com.jackalcode.ecommerceapi.dtos.requests.RegisterCustomerRequest;
+import com.jackalcode.ecommerceapi.dtos.requests.UpdateCustomerRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.CustomerResponse;
 import com.jackalcode.ecommerceapi.services.CustomerService;
 import lombok.AllArgsConstructor;
@@ -34,5 +35,13 @@ public class CustomerController {
 
         return new ResponseEntity<>(customerService.registerCustomer(registerCustomerRequest),
                 HttpStatus.CREATED);
+    }
+
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<CustomerResponse> updateCustomer(
+            @PathVariable(name = "id") Long customerId,
+            @RequestBody UpdateCustomerRequest updateCustomerRequest) {
+
+        return ResponseEntity.ok(customerService.updateCustomer(customerId, updateCustomerRequest));
     }
 }

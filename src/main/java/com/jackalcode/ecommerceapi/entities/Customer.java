@@ -3,6 +3,7 @@ package com.jackalcode.ecommerceapi.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,8 +36,8 @@ public class Customer {
     @OneToOne(mappedBy = "customer")
     private Cart cart;
 
-    @OneToMany(mappedBy = "customer")
-    List<Order> orders;
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    List<Order> orders = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {
