@@ -12,10 +12,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CustomerNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiError handleCustomerNotFoundException(
-            CustomerNotFoundException ex,
-            HttpServletRequest request) {
+            CustomerNotFoundException ex, HttpServletRequest request) {
 
-        return new ApiError(ErrorCode.CUSTOMER_NOT_FOUND,
-                ex.getMessage(), request.getRequestURI());
+        return new ApiError(ErrorCode.CUSTOMER_NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(CustomerAlreadyExistException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleCustomerAlreadyExistException(
+            CustomerAlreadyExistException ex, HttpServletRequest request) {
+
+        return new ApiError(ErrorCode.CUSTOMER_ALREADY_EXISTS, ex.getMessage(), request.getRequestURI());
     }
 }

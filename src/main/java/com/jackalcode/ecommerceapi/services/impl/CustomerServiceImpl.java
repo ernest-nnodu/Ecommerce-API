@@ -4,6 +4,7 @@ import com.jackalcode.ecommerceapi.dtos.requests.RegisterCustomerRequest;
 import com.jackalcode.ecommerceapi.dtos.requests.UpdateCustomerRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.CustomerResponse;
 import com.jackalcode.ecommerceapi.entities.Customer;
+import com.jackalcode.ecommerceapi.exceptions.CustomerAlreadyExistException;
 import com.jackalcode.ecommerceapi.exceptions.CustomerNotFoundException;
 import com.jackalcode.ecommerceapi.mappers.CustomerMapper;
 import com.jackalcode.ecommerceapi.repositories.CustomerRepository;
@@ -37,6 +38,11 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerResponse registerCustomer(RegisterCustomerRequest registerCustomerRequest) {
+
+        if (customerRepository.existsByEmail(registerCustomerRequest.email())) {
+            throw new CustomerAlreadyExistException("Customer already exist with email: " +
+                    registerCustomerRequest.email());
+        }
 
         Customer customer = customerMapper.toCustomer(registerCustomerRequest);
         customerRepository.save(customer);
