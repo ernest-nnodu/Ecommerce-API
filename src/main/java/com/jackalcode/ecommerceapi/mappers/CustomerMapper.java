@@ -9,5 +9,5 @@ import org.mapstruct.Mapper;
 public interface CustomerMapper {
 
     CustomerResponse toCustomerResponse(Customer customer);
-    CustomerResponse toCustomer(RegisterCustomerRequest registerCustomerRequest);
+    Customer toCustomer(RegisterCustomerRequest registerCustomerRequest);
 }

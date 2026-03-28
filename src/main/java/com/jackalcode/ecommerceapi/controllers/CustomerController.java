@@ -1,13 +1,12 @@
 package com.jackalcode.ecommerceapi.controllers;
 
+import com.jackalcode.ecommerceapi.dtos.requests.RegisterCustomerRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.CustomerResponse;
 import com.jackalcode.ecommerceapi.services.CustomerService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,5 +26,13 @@ public class CustomerController {
     public ResponseEntity<CustomerResponse> getCustomerById(
             @PathVariable(name = "id") Long customerId) {
         return ResponseEntity.ok(customerService.getCustomerById(customerId));
+    }
+
+    @PostMapping
+    public ResponseEntity<CustomerResponse> registerCustomer(
+            @RequestBody RegisterCustomerRequest registerCustomerRequest) {
+
+        return new ResponseEntity<>(customerService.registerCustomer(registerCustomerRequest),
+                HttpStatus.CREATED);
     }
 }

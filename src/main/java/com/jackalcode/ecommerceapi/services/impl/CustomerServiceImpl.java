@@ -1,5 +1,6 @@
 package com.jackalcode.ecommerceapi.services.impl;
 
+import com.jackalcode.ecommerceapi.dtos.requests.RegisterCustomerRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.CustomerResponse;
 import com.jackalcode.ecommerceapi.entities.Customer;
 import com.jackalcode.ecommerceapi.mappers.CustomerMapper;
@@ -29,6 +30,14 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResponse getCustomerById(Long id) {
 
         Customer customer = customerRepository.findById(id).orElse(null);
+        return customerMapper.toCustomerResponse(customer);
+    }
+
+    @Override
+    public CustomerResponse registerCustomer(RegisterCustomerRequest registerCustomerRequest) {
+
+        Customer customer = customerMapper.toCustomer(registerCustomerRequest);
+        customerRepository.save(customer);
         return customerMapper.toCustomerResponse(customer);
     }
 }
