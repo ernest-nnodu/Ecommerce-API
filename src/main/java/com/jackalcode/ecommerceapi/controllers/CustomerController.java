@@ -4,6 +4,7 @@ import com.jackalcode.ecommerceapi.dtos.requests.RegisterCustomerRequest;
 import com.jackalcode.ecommerceapi.dtos.requests.UpdateCustomerRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.CustomerResponse;
 import com.jackalcode.ecommerceapi.services.CustomerService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class CustomerController {
 
     @PostMapping
     public ResponseEntity<CustomerResponse> registerCustomer(
-            @RequestBody RegisterCustomerRequest registerCustomerRequest) {
+            @Valid @RequestBody RegisterCustomerRequest registerCustomerRequest) {
 
         return new ResponseEntity<>(customerService.registerCustomer(registerCustomerRequest),
                 HttpStatus.CREATED);
@@ -40,7 +41,7 @@ public class CustomerController {
     @PutMapping(path = "/{id}")
     public ResponseEntity<CustomerResponse> updateCustomer(
             @PathVariable(name = "id") Long customerId,
-            @RequestBody UpdateCustomerRequest updateCustomerRequest) {
+            @Valid @RequestBody UpdateCustomerRequest updateCustomerRequest) {
 
         return ResponseEntity.ok(customerService.updateCustomer(customerId, updateCustomerRequest));
     }
