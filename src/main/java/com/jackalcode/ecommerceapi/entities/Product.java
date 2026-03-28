@@ -3,6 +3,7 @@ package com.jackalcode.ecommerceapi.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 @Entity
@@ -17,16 +18,16 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "name")
     private String name;
 
     @Column(name = "price")
-    private double price;
+    private BigDecimal price;
 
     @Column(name = "stock_quantity")
-    private long quantityInStock;
+    private Long quantityInStock;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
