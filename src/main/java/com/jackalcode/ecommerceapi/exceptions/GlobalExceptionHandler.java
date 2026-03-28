@@ -2,9 +2,13 @@ package com.jackalcode.ecommerceapi.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -23,5 +27,18 @@ public class GlobalExceptionHandler {
             CustomerAlreadyExistException ex, HttpServletRequest request) {
 
         return new ApiError(ErrorCode.CUSTOMER_ALREADY_EXISTS, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex,
+                                                     HttpServletRequest request) {
+
+        var errors = new HashMap<String, String>();
+
+        ex.getBindingResult().getFieldErrors().forEach(
+                (error) -> errors.put(error.getField(), error.getDefaultMessage()));
+
+        return errors;
     }
 }
