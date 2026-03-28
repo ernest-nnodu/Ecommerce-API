@@ -4,6 +4,7 @@ import com.jackalcode.ecommerceapi.dtos.requests.RegisterCustomerRequest;
 import com.jackalcode.ecommerceapi.dtos.requests.UpdateCustomerRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.CustomerResponse;
 import com.jackalcode.ecommerceapi.entities.Customer;
+import com.jackalcode.ecommerceapi.exceptions.CustomerNotFoundException;
 import com.jackalcode.ecommerceapi.mappers.CustomerMapper;
 import com.jackalcode.ecommerceapi.repositories.CustomerRepository;
 import com.jackalcode.ecommerceapi.services.CustomerService;
@@ -29,7 +30,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResponse getCustomerById(Long id) {
 
-        Customer customer = customerRepository.findById(id).orElse(null);
+        Customer customer = getCustomer(id);
+
         return customerMapper.toCustomerResponse(customer);
     }
 
@@ -44,13 +46,16 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResponse updateCustomer(Long id, UpdateCustomerRequest updateCustomerRequest) {
 
-        Customer customer = customerRepository.findById(id).orElse(null);
-
-        if (customer == null) {
-            return null;
-        }
+        Customer customer = getCustomer(id);
 
         customerMapper.toCustomer(updateCustomerRequest, customer);
         return customerMapper.toCustomerResponse(customerRepository.save(customer));
+    }
+
+    private Customer getCustomer(Long id) {
+
+        return customerRepository.findById(id).orElseThrow(
+                () -> new CustomerNotFoundException("Customer not found with id: " + id)
+        );
     }
 }
