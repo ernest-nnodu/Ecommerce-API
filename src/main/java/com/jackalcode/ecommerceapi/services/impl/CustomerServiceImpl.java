@@ -24,4 +24,11 @@ public class CustomerServiceImpl implements CustomerService {
                 .map(customerMapper::toCustomerResponse)
                 .toList();
     }
+
+    @Override
+    public CustomerResponse getCustomerById(Long id) {
+
+        Customer customer = customerRepository.findById(id).orElse(null);
+        return customerMapper.toCustomerResponse(customer);
+    }
 }

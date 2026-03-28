@@ -5,6 +5,7 @@ import com.jackalcode.ecommerceapi.services.CustomerService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,5 +21,11 @@ public class CustomerController {
     @GetMapping
     public ResponseEntity<List<CustomerResponse>> getAllCustomers() {
         return ResponseEntity.ok(customerService.getAllCustomers());
+    }
+
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<CustomerResponse> getCustomerById(
+            @PathVariable(name = "id") Long customerId) {
+        return ResponseEntity.ok(customerService.getCustomerById(customerId));
     }
 }
