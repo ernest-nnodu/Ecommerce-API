@@ -24,15 +24,11 @@ public class Category {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
-    @ToString.Exclude
-    Set<Product> products = new HashSet<>();
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Category category = (Category) o;
-        return id == category.id;
+        return Objects.equals(id, category.id);
     }
 
     @Override

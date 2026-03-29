@@ -9,6 +9,7 @@ import com.jackalcode.ecommerceapi.exceptions.CustomerNotFoundException;
 import com.jackalcode.ecommerceapi.mappers.CustomerMapper;
 import com.jackalcode.ecommerceapi.repositories.CustomerRepository;
 import com.jackalcode.ecommerceapi.services.CustomerService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +38,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public CustomerResponse registerCustomer(RegisterCustomerRequest registerCustomerRequest) {
 
         if (customerRepository.existsByEmail(registerCustomerRequest.email())) {
@@ -50,6 +52,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public CustomerResponse updateCustomer(Long id, UpdateCustomerRequest updateCustomerRequest) {
 
         Customer customer = getCustomer(id);
