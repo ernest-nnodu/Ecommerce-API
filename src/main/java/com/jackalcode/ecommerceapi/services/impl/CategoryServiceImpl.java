@@ -2,6 +2,8 @@ package com.jackalcode.ecommerceapi.services.impl;
 
 import com.jackalcode.ecommerceapi.dtos.requests.CategoryRequest;
 import com.jackalcode.ecommerceapi.entities.Category;
+import com.jackalcode.ecommerceapi.exceptions.CategoryAlreadyExistsException;
+import com.jackalcode.ecommerceapi.exceptions.CategoryNotFoundException;
 import com.jackalcode.ecommerceapi.mappers.CategoryMapper;
 import com.jackalcode.ecommerceapi.repositories.CategoryRepository;
 import com.jackalcode.ecommerceapi.services.CategoryService;
@@ -25,6 +27,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category createCategory(CategoryRequest categoryRequest) {
 
+        checkCategoryNameExists(categoryRequest.name());
+
         Category category = categoryMapper.toCategory(categoryRequest);
         categoryRepository.save(category);
 
@@ -34,9 +38,19 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category updateCategory(Long id, CategoryRequest categoryRequest) {
 
-        Category exisitingCategory = categoryRepository.findById(id).orElse(null);
+        Category exisitingCategory = categoryRepository.findById(id).orElseThrow(
+                () -> new CategoryNotFoundException("Category not found with id: " + id));
+
+        checkCategoryNameExists(categoryRequest.name());
         categoryMapper.updateCategory(categoryRequest, exisitingCategory);
 
         return exisitingCategory;
+    }
+
+    private void checkCategoryNameExists(String categoryName) {
+        if (categoryRepository.existsByNameIgnoreCase(categoryName)) {
+            throw new CategoryAlreadyExistsException("Category already exists with name: " +
+                    categoryName);
+        }
     }
 }

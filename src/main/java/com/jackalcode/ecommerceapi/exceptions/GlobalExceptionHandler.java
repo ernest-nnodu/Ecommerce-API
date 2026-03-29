@@ -29,6 +29,20 @@ public class GlobalExceptionHandler {
         return new ApiError(ErrorCode.CUSTOMER_ALREADY_EXISTS, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(CategoryAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleCategoryAlreadyExistException(CategoryAlreadyExistsException ex,
+                                                        HttpServletRequest request) {
+        return new ApiError(ErrorCode.CATEGORY_ALREADY_EXISTS, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleCategoryAlreadyExistException(CategoryNotFoundException ex,
+                                                        HttpServletRequest request) {
+        return new ApiError(ErrorCode.CATEGORY_NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex,
