@@ -1,6 +1,6 @@
 package com.jackalcode.ecommerceapi.dtos.requests;
 
-public record CreateCategoryRequest(
+public record CategoryRequest(
         String name
 ) {
 }

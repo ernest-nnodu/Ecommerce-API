@@ -1,6 +1,6 @@
 package com.jackalcode.ecommerceapi.controllers;
 
-import com.jackalcode.ecommerceapi.dtos.requests.CreateCategoryRequest;
+import com.jackalcode.ecommerceapi.dtos.requests.CategoryRequest;
 import com.jackalcode.ecommerceapi.entities.Category;
 import com.jackalcode.ecommerceapi.services.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +25,18 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<Category> createCategory(
-            @RequestBody CreateCategoryRequest createCategoryRequest) {
+            @RequestBody CategoryRequest categoryRequest) {
 
         return new ResponseEntity<>(categoryService.createCategory(
-                createCategoryRequest), HttpStatus.CREATED );
+                categoryRequest), HttpStatus.CREATED );
+    }
+
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<Category> updateCategory(
+            @PathVariable Long id,
+            @RequestBody CategoryRequest categoryRequest) {
+
+        return new ResponseEntity<>(categoryService.updateCategory(
+                id, categoryRequest), HttpStatus.OK );
     }
 }

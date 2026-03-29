@@ -57,7 +57,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Customer customer = getCustomer(id);
 
-        customerMapper.toCustomer(updateCustomerRequest, customer);
+        customerMapper.updateCustomer(updateCustomerRequest, customer);
         return customerMapper.toCustomerResponse(customerRepository.save(customer));
     }
 

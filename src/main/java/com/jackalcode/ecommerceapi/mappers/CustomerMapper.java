@@ -19,5 +19,5 @@ public interface CustomerMapper {
     @Mapping(target = "firstName", source = "firstName")
     @Mapping(target = "lastName", source = "lastName")
     @Mapping(target = "email", source = "email")
-    void toCustomer(UpdateCustomerRequest updateCustomerRequest, @MappingTarget Customer customer);
+    void updateCustomer(UpdateCustomerRequest updateCustomerRequest, @MappingTarget Customer customer);
 }
