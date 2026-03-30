@@ -50,6 +50,13 @@ public class GlobalExceptionHandler {
         return new ApiError(ErrorCode.PRODUCT_NOT_FOUND, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(ProductAlreadyExistException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleProductNotFoundException(ProductAlreadyExistException ex,
+                                                   HttpServletRequest request) {
+        return new ApiError(ErrorCode.PRODUCT_ALREADY_EXISTS, ex.getMessage(), request.getRequestURI());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex,
