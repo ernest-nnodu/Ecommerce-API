@@ -5,6 +5,7 @@ import com.jackalcode.ecommerceapi.dtos.responses.ProductResponse;
 import com.jackalcode.ecommerceapi.entities.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
@@ -15,4 +16,7 @@ public interface ProductMapper {
 
     @Mapping(target = "category", ignore = true)
     Product toProduct(ProductRequest productRequest);
+
+    @Mapping(target = "category", ignore = true)
+    void updateProduct(ProductRequest productRequest, @MappingTarget Product existingProduct);
 }

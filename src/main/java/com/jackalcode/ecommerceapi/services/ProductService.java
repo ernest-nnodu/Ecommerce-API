@@ -12,4 +12,6 @@ public interface ProductService {
     ProductResponse getProduct(Long id);
 
     ProductResponse createProduct(ProductRequest productRequest);
+
+    ProductResponse updateProduct(Long id, ProductRequest productRequest);
 }

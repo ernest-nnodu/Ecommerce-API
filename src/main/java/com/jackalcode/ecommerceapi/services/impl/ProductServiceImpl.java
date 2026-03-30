@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -53,6 +54,23 @@ public class ProductServiceImpl implements ProductService {
         newProduct.setCategory(category);
 
         return productMapper.toProductResponse(productRepository.save(newProduct));
+    }
+
+    @Override
+    @Transactional
+    public ProductResponse updateProduct(Long id, ProductRequest productRequest) {
+
+        Product existingProduct = getProductEntity(id);
+
+        if (!existingProduct.getName().equalsIgnoreCase(productRequest.name())) {
+            checkProductAlreadyExist(productRequest.name());
+        }
+
+        Category category = getCategory(productRequest.categoryId());
+        productMapper.updateProduct(productRequest, existingProduct);
+        existingProduct.setCategory(category);
+
+        return productMapper.toProductResponse(existingProduct);
     }
 
     private Category getCategory(Long categoryId) {

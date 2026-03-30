@@ -3,6 +3,7 @@ package com.jackalcode.ecommerceapi.controllers;
 import com.jackalcode.ecommerceapi.dtos.requests.ProductRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.ProductResponse;
 import com.jackalcode.ecommerceapi.services.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,13 +25,23 @@ public class ProductController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<ProductResponse> getProduct(@PathVariable Long id) {
-        return ResponseEntity.ok(productService.getProduct(id));
+    public ResponseEntity<ProductResponse> getProduct(@PathVariable(name = "id") Long productId) {
+        return ResponseEntity.ok(productService.getProduct(productId));
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest productRequest) {
+    public ResponseEntity<ProductResponse> createProduct(
+            @Valid @RequestBody ProductRequest productRequest) {
 
         return new ResponseEntity<>(productService.createProduct(productRequest), HttpStatus.CREATED);
+    }
+
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<ProductResponse> updateProduct(
+            @PathVariable(name = "id") Long productId,
+            @Valid @RequestBody ProductRequest productRequest) {
+
+        return new ResponseEntity<>(productService.updateProduct(productId, productRequest),
+                HttpStatus.OK);
     }
 }
