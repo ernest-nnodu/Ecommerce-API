@@ -37,7 +37,7 @@ public class Product {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return id == product.id;
+        return Objects.equals(id, product.id);
     }
 
     @Override

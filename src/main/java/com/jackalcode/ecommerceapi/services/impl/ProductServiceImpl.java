@@ -2,6 +2,7 @@ package com.jackalcode.ecommerceapi.services.impl;
 
 import com.jackalcode.ecommerceapi.dtos.responses.ProductResponse;
 import com.jackalcode.ecommerceapi.entities.Product;
+import com.jackalcode.ecommerceapi.exceptions.ProductNotFoundException;
 import com.jackalcode.ecommerceapi.mappers.ProductMapper;
 import com.jackalcode.ecommerceapi.repositories.ProductRepository;
 import com.jackalcode.ecommerceapi.services.ProductService;
@@ -25,5 +26,18 @@ public class ProductServiceImpl implements ProductService {
         return products.stream()
                 .map(productMapper::toProductResponse)
                 .toList();
+    }
+
+    @Override
+    public ProductResponse getProduct(Long id) {
+
+        return productMapper.toProductResponse(getProductEntity(id));
+
+    }
+
+    private Product getProductEntity(Long id) {
+        return productRepository.findById(id).orElseThrow(
+                () -> new ProductNotFoundException("Product not found with id: " + id)
+        );
     }
 }

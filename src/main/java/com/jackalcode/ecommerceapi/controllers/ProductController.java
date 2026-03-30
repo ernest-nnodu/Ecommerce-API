@@ -5,6 +5,7 @@ import com.jackalcode.ecommerceapi.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,5 +22,10 @@ public class ProductController {
     public ResponseEntity<List<ProductResponse>> getProducts() {
 
         return ResponseEntity.ok(productService.getProducts());
+    }
+
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<ProductResponse> getProduct(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.getProduct(id));
     }
 }

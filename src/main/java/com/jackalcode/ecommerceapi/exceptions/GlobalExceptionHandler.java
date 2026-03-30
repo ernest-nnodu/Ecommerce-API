@@ -43,6 +43,13 @@ public class GlobalExceptionHandler {
         return new ApiError(ErrorCode.CATEGORY_NOT_FOUND, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(ProductNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleProductNotFoundException(ProductNotFoundException ex,
+                                                   HttpServletRequest request) {
+        return new ApiError(ErrorCode.PRODUCT_NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex,
