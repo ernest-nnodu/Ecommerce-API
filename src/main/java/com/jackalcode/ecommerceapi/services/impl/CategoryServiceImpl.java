@@ -7,6 +7,7 @@ import com.jackalcode.ecommerceapi.exceptions.CategoryNotFoundException;
 import com.jackalcode.ecommerceapi.mappers.CategoryMapper;
 import com.jackalcode.ecommerceapi.repositories.CategoryRepository;
 import com.jackalcode.ecommerceapi.services.CategoryService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public Category createCategory(CategoryRequest categoryRequest) {
 
         checkCategoryNameExists(categoryRequest.name());
@@ -36,6 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public Category updateCategory(Long id, CategoryRequest categoryRequest) {
 
         Category exisitingCategory = categoryRepository.findById(id).orElseThrow(
