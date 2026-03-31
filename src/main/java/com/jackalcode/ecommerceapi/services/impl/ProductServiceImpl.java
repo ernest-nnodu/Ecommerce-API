@@ -73,6 +73,13 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toProductResponse(existingProduct);
     }
 
+    @Override
+    public void deleteProduct(Long id) {
+
+        Product existingProduct = getProductEntity(id);
+        productRepository.delete(existingProduct);
+    }
+
     private Category getCategory(Long categoryId) {
 
         return categoryRepository.findById(categoryId).orElseThrow(
