@@ -57,6 +57,13 @@ public class GlobalExceptionHandler {
         return new ApiError(ErrorCode.PRODUCT_ALREADY_EXISTS, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(CartNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleCartNotFoundException(CartNotFoundException ex,
+                                                HttpServletRequest request) {
+        return new ApiError(ErrorCode.CART_NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex,

@@ -7,4 +7,5 @@ public enum ErrorCode {
     CATEGORY_NOT_FOUND,
     PRODUCT_NOT_FOUND,
     PRODUCT_ALREADY_EXISTS,
+    CART_NOT_FOUND
 }

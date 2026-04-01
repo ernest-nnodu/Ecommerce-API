@@ -3,6 +3,7 @@ package com.jackalcode.ecommerceapi.services.impl;
 import com.jackalcode.ecommerceapi.dtos.requests.RegisterCustomerRequest;
 import com.jackalcode.ecommerceapi.dtos.requests.UpdateCustomerRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.CustomerResponse;
+import com.jackalcode.ecommerceapi.entities.Cart;
 import com.jackalcode.ecommerceapi.entities.Customer;
 import com.jackalcode.ecommerceapi.exceptions.CustomerAlreadyExistException;
 import com.jackalcode.ecommerceapi.exceptions.CustomerNotFoundException;
@@ -47,6 +48,9 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         Customer customer = customerMapper.toCustomer(registerCustomerRequest);
+        Cart cart = new Cart();
+        cart.setCustomer(customer);
+        customer.setCart(cart);
         customerRepository.save(customer);
         return customerMapper.toCustomerResponse(customer);
     }

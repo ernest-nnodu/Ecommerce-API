@@ -1,8 +1,10 @@
 package com.jackalcode.ecommerceapi.config;
 
+import com.jackalcode.ecommerceapi.entities.Cart;
 import com.jackalcode.ecommerceapi.entities.Category;
 import com.jackalcode.ecommerceapi.entities.Customer;
 import com.jackalcode.ecommerceapi.entities.Product;
+import com.jackalcode.ecommerceapi.repositories.CartRepository;
 import com.jackalcode.ecommerceapi.repositories.CategoryRepository;
 import com.jackalcode.ecommerceapi.repositories.CustomerRepository;
 import com.jackalcode.ecommerceapi.repositories.ProductRepository;
@@ -26,6 +28,7 @@ public class DataSeeder implements CommandLineRunner {
     private final CustomerRepository customerRepo;
     private final CategoryRepository categoryRepo;
     private final ProductRepository productRepo;
+    private final CartRepository cartRepo;
 
     private final Random random = new Random();
 
@@ -49,6 +52,9 @@ public class DataSeeder implements CommandLineRunner {
             customer.setLastName(randomLastName());
             customer.setEmail(generateEmail(customer.getFirstName(), customer.getLastName()));
             customer.setPassword(generateRandomPassword(8));
+            Cart cart = new Cart();
+            cart.setCustomer(customer);
+            customer.setCart(cart);
             customers.add(customer);
         }
 

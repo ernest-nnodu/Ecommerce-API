@@ -23,7 +23,7 @@ public class Cart {
     private Customer customer;
 
     @OneToMany(mappedBy = "cart",
-            fetch = FetchType.EAGER,
+            fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CartItem> cartItems =  new HashSet<>();
 

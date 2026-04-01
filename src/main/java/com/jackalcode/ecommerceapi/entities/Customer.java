@@ -33,7 +33,7 @@ public class Customer {
     @Column(name = "password")
     private String password;
 
-    @OneToOne(mappedBy = "customer")
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
     private Cart cart;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
