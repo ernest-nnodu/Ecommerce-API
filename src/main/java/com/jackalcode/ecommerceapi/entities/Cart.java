@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Entity
@@ -35,6 +36,13 @@ public class Cart {
     public void removeItem(CartItem cartItem) {
         cartItems.remove(cartItem);
         cartItem.setCart(null);
+    }
+
+    public BigDecimal getTotalPrice() {
+
+        return cartItems.stream()
+                .map(CartItem::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     @Override

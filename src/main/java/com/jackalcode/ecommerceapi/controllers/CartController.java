@@ -2,6 +2,7 @@ package com.jackalcode.ecommerceapi.controllers;
 
 import com.jackalcode.ecommerceapi.dtos.requests.AddToCartRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.CartItemResponse;
+import com.jackalcode.ecommerceapi.dtos.responses.CartResponse;
 import com.jackalcode.ecommerceapi.services.CartService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,5 +22,11 @@ public class CartController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(cartService.addItemToCart(cartId, addToCartRequest));
+    }
+
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<CartResponse> getCart(@PathVariable(name = "id") Long cartId) {
+
+        return ResponseEntity.ok(cartService.getCart(cartId));
     }
 }

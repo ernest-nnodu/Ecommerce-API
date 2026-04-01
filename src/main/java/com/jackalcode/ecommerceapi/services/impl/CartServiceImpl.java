@@ -2,7 +2,10 @@ package com.jackalcode.ecommerceapi.services.impl;
 
 import com.jackalcode.ecommerceapi.dtos.requests.AddToCartRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.CartItemResponse;
+import com.jackalcode.ecommerceapi.dtos.responses.CartResponse;
+import com.jackalcode.ecommerceapi.entities.Cart;
 import com.jackalcode.ecommerceapi.entities.CartItem;
+import com.jackalcode.ecommerceapi.entities.Product;
 import com.jackalcode.ecommerceapi.exceptions.CartNotFoundException;
 import com.jackalcode.ecommerceapi.exceptions.ProductNotFoundException;
 import com.jackalcode.ecommerceapi.mappers.CartMapper;
@@ -11,6 +14,7 @@ import com.jackalcode.ecommerceapi.repositories.ProductRepository;
 import com.jackalcode.ecommerceapi.services.CartService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,13 +29,9 @@ public class CartServiceImpl implements CartService {
     @Transactional
     public CartItemResponse addItemToCart(Long cartId, AddToCartRequest addToCartRequest) {
 
-        var cart = cartRepository.findById(cartId).orElseThrow(
-                () -> new CartNotFoundException("Cart not found with id: " + cartId)
-        );
+        var cart = getCartEntity(cartId);
 
-        var product = productRepository.findById(addToCartRequest.productId()).orElseThrow(
-                () -> new ProductNotFoundException("Product not found with id: " + addToCartRequest.productId())
-        );
+        var product = getProductEntity(addToCartRequest.productId());
 
         var item = cart.getCartItems().stream()
                 .filter(cartItem -> cartItem.getProduct().getId().equals(product.getId()))
@@ -48,5 +48,24 @@ public class CartServiceImpl implements CartService {
 
         cartRepository.save(cart);
         return cartMapper.toCartItemResponse(item);
+    }
+
+    @Override
+    public CartResponse getCart(Long cartId) {
+        var cart = getCartEntity(cartId);
+
+        return cartMapper.toCartResponse(cart);
+    }
+
+    private Cart getCartEntity(Long cartId) {
+        return cartRepository.findById(cartId).orElseThrow(
+                () -> new CartNotFoundException("Cart not found with id: " + cartId)
+        );
+    }
+
+    private Product getProductEntity(Long productId) {
+        return productRepository.findById(productId).orElseThrow(
+                () -> new ProductNotFoundException("Product not found with id: " + productId)
+        );
     }
 }
