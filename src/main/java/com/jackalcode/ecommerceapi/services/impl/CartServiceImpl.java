@@ -87,6 +87,14 @@ public class CartServiceImpl implements CartService {
         cartRepository.save(cart);
     }
 
+    @Override
+    public void clearCart(Long cartId) {
+
+        var cart = getCartEntity(cartId);
+        cart.clearItems();
+        cartRepository.save(cart);
+    }
+
     private Cart getCartEntity(Long cartId) {
         return cartRepository.findById(cartId).orElseThrow(
                 () -> new CartNotFoundException("Cart not found with id: " + cartId)
