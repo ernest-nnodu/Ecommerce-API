@@ -16,8 +16,6 @@ import com.jackalcode.ecommerceapi.repositories.ProductRepository;
 import com.jackalcode.ecommerceapi.services.CartService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -36,7 +34,7 @@ public class CartServiceImpl implements CartService {
 
         var product = getProductEntity(addToCartRequest.productId());
 
-        var item = getItemFromCart(cart, product);
+        var item = cart.getCartItem(addToCartRequest.productId());
 
         if (item == null) {
             item = new CartItem();
@@ -62,8 +60,7 @@ public class CartServiceImpl implements CartService {
     public CartItemResponse updateCart(Long cartId, Long productId, UpdateCartRequest updateCartRequest) {
 
         var cart = getCartEntity(cartId);
-        var product = getProductEntity(productId);
-        var item = getItemFromCart(cart, product);
+        var item = cart.getCartItem(productId);
 
         if (item == null) {
             throw new ProductNotInCartException("Cart do not contain product with id:  " + productId);
@@ -85,11 +82,5 @@ public class CartServiceImpl implements CartService {
         return productRepository.findById(productId).orElseThrow(
                 () -> new ProductNotFoundException("Product not found with id: " + productId)
         );
-    }
-
-    private CartItem getItemFromCart(Cart cart, Product product) {
-        return cart.getCartItems().stream()
-                .filter(cartItem -> cartItem.getProduct().getId().equals(product.getId()))
-                .findFirst().orElse(null);
     }
 }

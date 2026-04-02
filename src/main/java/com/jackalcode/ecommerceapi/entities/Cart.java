@@ -1,5 +1,6 @@
 package com.jackalcode.ecommerceapi.entities;
 
+import com.jackalcode.ecommerceapi.exceptions.ProductNotInCartException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,6 +37,12 @@ public class Cart {
     public void removeItem(CartItem cartItem) {
         cartItems.remove(cartItem);
         cartItem.setCart(null);
+    }
+
+    public CartItem getCartItem(Long productId) {
+        return cartItems.stream()
+                .filter(cartItem -> cartItem.getProduct().getId().equals(productId))
+                .findFirst().orElse(null);
     }
 
     public BigDecimal getTotalPrice() {
