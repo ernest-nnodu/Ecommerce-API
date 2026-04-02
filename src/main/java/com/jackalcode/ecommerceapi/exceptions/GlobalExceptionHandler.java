@@ -64,6 +64,13 @@ public class GlobalExceptionHandler {
         return new ApiError(ErrorCode.CART_NOT_FOUND, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(ProductNotInCartException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleProductNotInCartException(ProductNotInCartException ex,
+                                                    HttpServletRequest request) {
+        return new ApiError(ErrorCode.PRODUCT_NOT_IN_CART, ex.getMessage(), request.getRequestURI());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex,
