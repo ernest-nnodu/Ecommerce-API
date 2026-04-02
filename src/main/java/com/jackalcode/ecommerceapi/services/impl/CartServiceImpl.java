@@ -72,6 +72,21 @@ public class CartServiceImpl implements CartService {
         return cartMapper.toCartItemResponse(item);
     }
 
+    @Override
+    public void removeItemFromCart(Long cartId, Long productId) {
+
+        var cart = getCartEntity(cartId);
+        var item = cart.getCartItem(productId);
+
+        if (item == null) {
+            throw new ProductNotInCartException("Cart do not contain product with id:  " + productId);
+        } else {
+            cart.removeItem(item);
+        }
+
+        cartRepository.save(cart);
+    }
+
     private Cart getCartEntity(Long cartId) {
         return cartRepository.findById(cartId).orElseThrow(
                 () -> new CartNotFoundException("Cart not found with id: " + cartId)
