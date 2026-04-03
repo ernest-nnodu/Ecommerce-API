@@ -33,8 +33,8 @@ public class Customer {
     @Column(name = "password")
     private String password;
 
-    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
-    private Cart cart;
+    //@OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
+    //private Cart cart;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     List<Order> orders = new ArrayList<>();
@@ -43,7 +43,7 @@ public class Customer {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Customer customer = (Customer) o;
-        return id == customer.id && Objects.equals(email, customer.email);
+        return Objects.equals(id, customer.id) && Objects.equals(email, customer.email);
     }
 
     @Override

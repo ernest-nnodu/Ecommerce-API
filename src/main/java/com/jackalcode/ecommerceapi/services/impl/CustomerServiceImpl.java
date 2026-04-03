@@ -8,6 +8,7 @@ import com.jackalcode.ecommerceapi.entities.Customer;
 import com.jackalcode.ecommerceapi.exceptions.CustomerAlreadyExistException;
 import com.jackalcode.ecommerceapi.exceptions.CustomerNotFoundException;
 import com.jackalcode.ecommerceapi.mappers.CustomerMapper;
+import com.jackalcode.ecommerceapi.repositories.CartRepository;
 import com.jackalcode.ecommerceapi.repositories.CustomerRepository;
 import com.jackalcode.ecommerceapi.services.CustomerService;
 import jakarta.transaction.Transactional;
@@ -21,6 +22,7 @@ import java.util.List;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final CartRepository cartRepository;
     private final CustomerMapper customerMapper;
 
     @Override
@@ -33,7 +35,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResponse getCustomerById(Long id) {
 
-        Customer customer = getCustomer(id);
+        Customer customer = getCustomerEntity(id);
 
         return customerMapper.toCustomerResponse(customer);
     }
@@ -42,16 +44,18 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional
     public CustomerResponse registerCustomer(RegisterCustomerRequest registerCustomerRequest) {
 
+        //Check if customer with same email already exist in the database
         if (customerRepository.existsByEmail(registerCustomerRequest.email())) {
             throw new CustomerAlreadyExistException("Customer already exist with email: " +
                     registerCustomerRequest.email());
         }
 
+        //Create new customer, assign a cart to new customer, and then save to database
         Customer customer = customerMapper.toCustomer(registerCustomerRequest);
+        customerRepository.save(customer);
         Cart cart = new Cart();
         cart.setCustomer(customer);
-        customer.setCart(cart);
-        customerRepository.save(customer);
+        cartRepository.save(cart);
         return customerMapper.toCustomerResponse(customer);
     }
 
@@ -59,13 +63,20 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional
     public CustomerResponse updateCustomer(Long id, UpdateCustomerRequest updateCustomerRequest) {
 
-        Customer customer = getCustomer(id);
+        Customer existingCustomer = getCustomerEntity(id);
 
-        customerMapper.updateCustomer(updateCustomerRequest, customer);
-        return customerMapper.toCustomerResponse(customerRepository.save(customer));
+        //If customer email need updating, check if new email already exist in the database
+        if (!existingCustomer.getEmail().equals(updateCustomerRequest.email()) &&
+        customerRepository.existsByEmail(updateCustomerRequest.email())) {
+            throw new CustomerAlreadyExistException("Customer already exist with email: " +
+                    updateCustomerRequest.email());
+        }
+
+        customerMapper.updateCustomer(updateCustomerRequest, existingCustomer);
+        return customerMapper.toCustomerResponse(customerRepository.save(existingCustomer));
     }
 
-    private Customer getCustomer(Long id) {
+    private Customer getCustomerEntity(Long id) {
 
         return customerRepository.findById(id).orElseThrow(
                 () -> new CustomerNotFoundException("Customer not found with id: " + id)

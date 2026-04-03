@@ -52,13 +52,17 @@ public class DataSeeder implements CommandLineRunner {
             customer.setLastName(randomLastName());
             customer.setEmail(generateEmail(customer.getFirstName(), customer.getLastName()));
             customer.setPassword(generateRandomPassword(8));
-            Cart cart = new Cart();
-            cart.setCustomer(customer);
-            customer.setCart(cart);
             customers.add(customer);
         }
 
         customerRepo.saveAll(customers);
+
+        //Assign cart to each customer
+        customers.forEach(customer -> {
+            Cart cart = new Cart();
+            cart.setCustomer(customer);
+            cartRepo.save(cart);
+        });
 
         // =========================
         // 2. Categories (10)
