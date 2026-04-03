@@ -1,6 +1,5 @@
 package com.jackalcode.ecommerceapi.dtos.requests;
 
-import com.jackalcode.ecommerceapi.entities.Product;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

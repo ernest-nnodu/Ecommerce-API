@@ -16,7 +16,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -46,13 +45,14 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductResponse createProduct(ProductRequest productRequest) {
 
+        //Check if product already exist in the database
         checkProductAlreadyExist(productRequest.name());
 
         Category category = getCategory(productRequest.categoryId());
 
+        //Create new product and save to database
         Product newProduct = productMapper.toProduct(productRequest);
         newProduct.setCategory(category);
-
         return productMapper.toProductResponse(productRepository.save(newProduct));
     }
 
@@ -62,10 +62,12 @@ public class ProductServiceImpl implements ProductService {
 
         Product existingProduct = getProductEntity(id);
 
+        //If product name need updating, check if name already exist in the database
         if (!existingProduct.getName().equalsIgnoreCase(productRequest.name())) {
             checkProductAlreadyExist(productRequest.name());
         }
 
+        //Update product and save to database
         Category category = getCategory(productRequest.categoryId());
         productMapper.updateProduct(productRequest, existingProduct);
         existingProduct.setCategory(category);

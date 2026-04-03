@@ -33,7 +33,8 @@ public class ProductController {
     public ResponseEntity<ProductResponse> createProduct(
             @Valid @RequestBody ProductRequest productRequest) {
 
-        return new ResponseEntity<>(productService.createProduct(productRequest), HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(productService.createProduct(productRequest));
     }
 
     @PutMapping(path = "/{id}")
@@ -41,8 +42,7 @@ public class ProductController {
             @PathVariable(name = "id") Long productId,
             @Valid @RequestBody ProductRequest productRequest) {
 
-        return new ResponseEntity<>(productService.updateProduct(productId, productRequest),
-                HttpStatus.OK);
+        return ResponseEntity.ok(productService.updateProduct(productId, productRequest));
     }
 
     @DeleteMapping(path = "/{id}")
