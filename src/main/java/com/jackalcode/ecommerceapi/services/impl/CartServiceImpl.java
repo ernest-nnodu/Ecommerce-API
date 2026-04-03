@@ -36,15 +36,17 @@ public class CartServiceImpl implements CartService {
 
         var item = cart.getCartItem(addToCartRequest.productId());
 
-        if (item == null) {
+        //If item exist in the cart, increase its quantity by 1, else add the item to the cart
+        if (!(item == null)) {
+            item.setQuantity(item.getQuantity() + 1);
+        } else {
             item = new CartItem();
             item.setProduct(product);
             item.setQuantity(1);
             cart.addItem(item);
-        } else {
-            item.setQuantity(item.getQuantity() + 1);
         }
 
+        //Persist cart to database
         cartRepository.save(cart);
         return cartMapper.toCartItemResponse(item);
     }
@@ -63,7 +65,8 @@ public class CartServiceImpl implements CartService {
         var item = cart.getCartItem(productId);
 
         if (item == null) {
-            throw new ProductNotInCartException("Cart do not contain product with id:  " + productId);
+            throw new ProductNotInCartException("Cart do not contain product with id:  " +
+                    productId);
         } else {
             item.setQuantity(updateCartRequest.quantity());
         }
@@ -79,7 +82,8 @@ public class CartServiceImpl implements CartService {
         var item = cart.getCartItem(productId);
 
         if (item == null) {
-            throw new ProductNotInCartException("Cart do not contain product with id:  " + productId);
+            throw new ProductNotInCartException("Cart do not contain product with id:  " +
+                    productId);
         } else {
             cart.removeItem(item);
         }
