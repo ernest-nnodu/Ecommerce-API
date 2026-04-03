@@ -5,6 +5,7 @@ import com.jackalcode.ecommerceapi.entities.Category;
 import com.jackalcode.ecommerceapi.services.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +29,8 @@ public class CategoryController {
     public ResponseEntity<Category> createCategory(
             @Valid @RequestBody CategoryRequest categoryRequest) {
 
-        return new ResponseEntity<>(categoryService.createCategory(
-                categoryRequest), HttpStatus.CREATED );
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(categoryService.createCategory(categoryRequest));
     }
 
     @PutMapping(path = "/{id}")
@@ -37,7 +38,6 @@ public class CategoryController {
             @PathVariable Long id,
             @Valid @RequestBody CategoryRequest categoryRequest) {
 
-        return new ResponseEntity<>(categoryService.updateCategory(
-                id, categoryRequest), HttpStatus.OK );
+        return ResponseEntity.ok(categoryService.updateCategory(id, categoryRequest));
     }
 }

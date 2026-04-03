@@ -29,8 +29,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public Category createCategory(CategoryRequest categoryRequest) {
 
+        //Check if category already exist in the database
         checkCategoryNameExists(categoryRequest.name());
 
+        //Create new category and save to database
         Category category = categoryMapper.toCategory(categoryRequest);
         categoryRepository.save(category);
 
@@ -41,10 +43,14 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public Category updateCategory(Long id, CategoryRequest categoryRequest) {
 
+        //Check category id is valid
         Category exisitingCategory = categoryRepository.findById(id).orElseThrow(
                 () -> new CategoryNotFoundException("Category not found with id: " + id));
 
+        //Check if update category name already exist in the database
         checkCategoryNameExists(categoryRequest.name());
+
+        //Update exisiting category
         categoryMapper.updateCategory(categoryRequest, exisitingCategory);
 
         return exisitingCategory;
