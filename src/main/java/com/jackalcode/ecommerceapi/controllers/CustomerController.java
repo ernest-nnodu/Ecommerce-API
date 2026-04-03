@@ -34,8 +34,8 @@ public class CustomerController {
     public ResponseEntity<CustomerResponse> registerCustomer(
             @Valid @RequestBody RegisterCustomerRequest registerCustomerRequest) {
 
-        return new ResponseEntity<>(customerService.registerCustomer(registerCustomerRequest),
-                HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(customerService.registerCustomer(registerCustomerRequest));
     }
 
     @PutMapping(path = "/{id}")
