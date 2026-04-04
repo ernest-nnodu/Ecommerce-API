@@ -2,6 +2,8 @@ package com.jackalcode.ecommerceapi.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -73,8 +75,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex,
-                                                     HttpServletRequest request) {
+    public Map<String, String> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
 
         var errors = new HashMap<String, String>();
 
@@ -82,5 +83,11 @@ public class GlobalExceptionHandler {
                 (error) -> errors.put(error.getField(), error.getDefaultMessage()));
 
         return errors;
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Void> handleBadCredentialsException() {
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }
