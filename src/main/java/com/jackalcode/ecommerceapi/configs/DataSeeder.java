@@ -1,4 +1,4 @@
-package com.jackalcode.ecommerceapi.config;
+package com.jackalcode.ecommerceapi.configs;
 
 import com.jackalcode.ecommerceapi.entities.Cart;
 import com.jackalcode.ecommerceapi.entities.Category;
@@ -51,7 +51,7 @@ public class DataSeeder implements CommandLineRunner {
             customer.setFirstName(randomFirstName());
             customer.setLastName(randomLastName());
             customer.setEmail(generateEmail(customer.getFirstName(), customer.getLastName()));
-            customer.setPassword(generateRandomPassword(8));
+            customer.setPassword(generateRandomPassword());
             customers.add(customer);
         }
 
@@ -122,7 +122,7 @@ public class DataSeeder implements CommandLineRunner {
         return first.toLowerCase() + "." + last.toLowerCase() + random.nextInt(1000) + "@mail.com";
     }
 
-    private String generateRandomPassword(int length) {
+    private String generateRandomPassword() {
         String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String lower = "abcdefghijklmnopqrstuvwxyz";
         String digits = "0123456789";
@@ -140,7 +140,7 @@ public class DataSeeder implements CommandLineRunner {
         password.append(special.charAt(random.nextInt(special.length())));
 
         // Fill remaining length
-        for (int i = 4; i < length; i++) {
+        for (int i = 4; i < 8; i++) {
             password.append(allChars.charAt(random.nextInt(allChars.length())));
         }
 
