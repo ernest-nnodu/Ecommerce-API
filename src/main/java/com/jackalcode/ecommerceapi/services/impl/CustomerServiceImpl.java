@@ -13,6 +13,7 @@ import com.jackalcode.ecommerceapi.repositories.CustomerRepository;
 import com.jackalcode.ecommerceapi.services.CustomerService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final CartRepository cartRepository;
     private final CustomerMapper customerMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<CustomerResponse> getAllCustomers() {
@@ -50,12 +52,16 @@ public class CustomerServiceImpl implements CustomerService {
                     registerCustomerRequest.email());
         }
 
-        //Create new customer, assign a cart to new customer, and then save to database
+        //Create new customer, hash customer password, and then save to database
         Customer customer = customerMapper.toCustomer(registerCustomerRequest);
+        customer.setPassword(passwordEncoder.encode(customer.getPassword()));
         customerRepository.save(customer);
+
+        //Assign a cart to customer
         Cart cart = new Cart();
         cart.setCustomer(customer);
         cartRepository.save(cart);
+
         return customerMapper.toCustomerResponse(customer);
     }
 

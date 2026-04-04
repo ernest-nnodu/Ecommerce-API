@@ -11,6 +11,7 @@ import com.jackalcode.ecommerceapi.repositories.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -31,6 +32,7 @@ public class DataSeeder implements CommandLineRunner {
     private final CartRepository cartRepo;
 
     private final Random random = new Random();
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -51,7 +53,7 @@ public class DataSeeder implements CommandLineRunner {
             customer.setFirstName(randomFirstName());
             customer.setLastName(randomLastName());
             customer.setEmail(generateEmail(customer.getFirstName(), customer.getLastName()));
-            customer.setPassword(generateRandomPassword());
+            customer.setPassword(passwordEncoder.encode("Abcd1234!"));
             customers.add(customer);
         }
 
