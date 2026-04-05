@@ -5,6 +5,7 @@ import com.jackalcode.ecommerceapi.dtos.requests.UpdateCustomerRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.CustomerResponse;
 import com.jackalcode.ecommerceapi.entities.Cart;
 import com.jackalcode.ecommerceapi.entities.Customer;
+import com.jackalcode.ecommerceapi.entities.Role;
 import com.jackalcode.ecommerceapi.exceptions.CustomerAlreadyExistException;
 import com.jackalcode.ecommerceapi.exceptions.CustomerNotFoundException;
 import com.jackalcode.ecommerceapi.mappers.CustomerMapper;
@@ -55,6 +56,7 @@ public class CustomerServiceImpl implements CustomerService {
         //Create new customer, hash customer password, and then save to database
         Customer customer = customerMapper.toCustomer(registerCustomerRequest);
         customer.setPassword(passwordEncoder.encode(customer.getPassword()));
+        customer.setRole(Role.USER);
         customerRepository.save(customer);
 
         //Assign a cart to customer
