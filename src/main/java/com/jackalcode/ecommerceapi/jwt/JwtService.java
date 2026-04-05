@@ -1,5 +1,6 @@
 package com.jackalcode.ecommerceapi.jwt;
 
+import com.jackalcode.ecommerceapi.configs.JwtConfig;
 import com.jackalcode.ecommerceapi.entities.Customer;
 import com.jackalcode.ecommerceapi.repositories.CustomerRepository;
 import io.jsonwebtoken.Claims;
@@ -16,23 +17,19 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtService {
 
-    private final CustomerRepository customerRepository;
+    private final JwtConfig jwtConfig;
 
     @Value("${spring.jwt.secret}")
     private String secret;
 
-    public String generateToken(Customer user) {
+    public String generateAccessToken(Customer user) {
 
-        final long expiration = 864_000_000;  //1 day expiration
+        return generateToken(user, jwtConfig.getAccessTokenExpiration());
+    }
 
-        return Jwts.builder()
-                .subject(user.getId().toString())
-                .claim("name", user.getFirstName() + " " + user.getLastName())
-                .claim("email", user.getEmail())
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
-                .compact();
+    public String generateRefreshToken(Customer user) {
+
+        return generateToken(user, jwtConfig.getRefreshTokenExpiration());
     }
 
     public boolean validateToken(String token) {
@@ -53,9 +50,20 @@ public class JwtService {
 
     private Claims getClaims(String token) {
         return Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                .verifyWith(jwtConfig.getSecretKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+    }
+
+    private String generateToken(Customer user, long expiration) {
+        return Jwts.builder()
+                .subject(user.getId().toString())
+                .claim("name", user.getFirstName() + " " + user.getLastName())
+                .claim("email", user.getEmail())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(jwtConfig.getSecretKey())
+                .compact();
     }
 }
