@@ -11,6 +11,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,11 +40,11 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.email(), loginRequest.password()));
 
-        var user = customerRepository.findByEmail(loginRequest.email()).orElseThrow();
+        var customer = customerRepository.findByEmail(loginRequest.email()).orElseThrow();
 
         //Generate access and refresh token
-        var accessToken = jwtService.generateAccessToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        var accessToken = jwtService.generateAccessToken(customer);
+        var refreshToken = jwtService.generateRefreshToken(customer);
 
         //Add refresh token to http only cookie
         var cookie = new Cookie("refreshToken", refreshToken);
@@ -57,10 +58,21 @@ public class AuthController {
         return ResponseEntity.ok(new JwtResponse(accessToken));
     }
 
-    @PostMapping("/validate")
-    public ResponseEntity<Boolean> validate(@RequestHeader("Authorization") String token) {
+    @PostMapping("/refresh")
+    public ResponseEntity<JwtResponse> refreshToken(
+            @CookieValue(value = "refreshToken") String refreshToken) {
 
-        return ResponseEntity.ok(jwtService.validateToken(token.replace("Bearer ", "")));
+        //Validate refresh token
+        if (!jwtService.validateToken(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        //Generate new access token if customer exists
+        var customerId = jwtService.getSubject(refreshToken);
+        var customer = customerRepository.findById(customerId).orElseThrow();
+        var accessToken = jwtService.generateAccessToken(customer);
+
+        return ResponseEntity.ok(new JwtResponse(accessToken));
     }
 
     @GetMapping("/current-user")

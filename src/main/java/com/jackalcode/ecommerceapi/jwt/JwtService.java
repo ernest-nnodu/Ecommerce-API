@@ -2,13 +2,10 @@ package com.jackalcode.ecommerceapi.jwt;
 
 import com.jackalcode.ecommerceapi.configs.JwtConfig;
 import com.jackalcode.ecommerceapi.entities.Customer;
-import com.jackalcode.ecommerceapi.repositories.CustomerRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -19,24 +16,20 @@ public class JwtService {
 
     private final JwtConfig jwtConfig;
 
-    @Value("${spring.jwt.secret}")
-    private String secret;
+    public String generateAccessToken(Customer customer) {
 
-    public String generateAccessToken(Customer user) {
-
-        return generateToken(user, jwtConfig.getAccessTokenExpiration());
+        return generateToken(customer, jwtConfig.getAccessTokenExpiration());
     }
 
-    public String generateRefreshToken(Customer user) {
+    public String generateRefreshToken(Customer customer) {
 
-        return generateToken(user, jwtConfig.getRefreshTokenExpiration());
+        return generateToken(customer, jwtConfig.getRefreshTokenExpiration());
     }
 
     public boolean validateToken(String token) {
 
         try {
             var claims = getClaims(token);
-
             return claims.getExpiration().after(new Date());
         } catch (JwtException e) {
             return false;
@@ -56,11 +49,11 @@ public class JwtService {
                 .getPayload();
     }
 
-    private String generateToken(Customer user, long expiration) {
+    private String generateToken(Customer customer, long expiration) {
         return Jwts.builder()
-                .subject(user.getId().toString())
-                .claim("name", user.getFirstName() + " " + user.getLastName())
-                .claim("email", user.getEmail())
+                .subject(customer.getId().toString())
+                .claim("name", customer.getFirstName() + " " + customer.getLastName())
+                .claim("email", customer.getEmail())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(jwtConfig.getSecretKey())
