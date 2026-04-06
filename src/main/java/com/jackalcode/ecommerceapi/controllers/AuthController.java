@@ -47,7 +47,7 @@ public class AuthController {
         var refreshToken = jwtService.generateRefreshToken(customer);
 
         //Add refresh token to http only cookie
-        var cookie = new Cookie("refreshToken", refreshToken);
+        var cookie = new Cookie("refreshToken", refreshToken.toString());
         cookie.setHttpOnly(true);
         cookie.setPath("/auth/refresh");
         cookie.setMaxAge(Math.toIntExact(jwtConfig.getRefreshTokenExpiration())); //7 day expiration
@@ -55,7 +55,7 @@ public class AuthController {
 
         response.addCookie(cookie);
 
-        return ResponseEntity.ok(new JwtResponse(accessToken));
+        return ResponseEntity.ok(new JwtResponse(accessToken.toString()));
     }
 
     @PostMapping("/refresh")
@@ -63,16 +63,17 @@ public class AuthController {
             @CookieValue(value = "refreshToken") String refreshToken) {
 
         //Validate refresh token
-        if (!jwtService.validateToken(refreshToken)) {
+        var jwt = jwtService.parseToken(refreshToken);
+        if (jwt == null || jwt.isExpired()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         //Generate new access token if customer exists
-        var customerId = jwtService.getSubject(refreshToken);
+        var customerId = jwt.getCustomerId();
         var customer = customerRepository.findById(customerId).orElseThrow();
         var accessToken = jwtService.generateAccessToken(customer);
 
-        return ResponseEntity.ok(new JwtResponse(accessToken));
+        return ResponseEntity.ok(new JwtResponse(accessToken.toString()));
     }
 
     @GetMapping("/current-user")
