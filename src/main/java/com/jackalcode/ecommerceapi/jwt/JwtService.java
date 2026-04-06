@@ -16,32 +16,28 @@ public class JwtService {
 
     private final JwtConfig jwtConfig;
 
-    public String generateAccessToken(Customer customer) {
+    public Jwt generateAccessToken(Customer customer) {
 
         return generateToken(customer, jwtConfig.getAccessTokenExpiration());
     }
 
-    public String generateRefreshToken(Customer customer) {
+    public Jwt generateRefreshToken(Customer customer) {
 
         return generateToken(customer, jwtConfig.getRefreshTokenExpiration());
     }
 
-    public boolean validateToken(String token) {
+    public Jwt parseToken(String token) {
 
         try {
             var claims = getClaims(token);
-            return claims.getExpiration().after(new Date());
+            return new Jwt(claims, jwtConfig.getSecretKey());
         } catch (JwtException e) {
-            return false;
+            return null;
         }
     }
 
-    public Long getSubject(String token) {
-
-        return Long.valueOf(getClaims(token).getSubject());
-    }
-
     private Claims getClaims(String token) {
+
         return Jwts.parser()
                 .verifyWith(jwtConfig.getSecretKey())
                 .build()
@@ -49,15 +45,16 @@ public class JwtService {
                 .getPayload();
     }
 
-    private String generateToken(Customer customer, long expiration) {
-        return Jwts.builder()
+    private Jwt generateToken(Customer customer, long expiration) {
+        var claims =  Jwts.claims()
                 .subject(customer.getId().toString())
-                .claim("name", customer.getFirstName() + " " + customer.getLastName())
-                .claim("email", customer.getEmail())
-                .claim("role", customer.getRole())
+                .add("name", customer.getFirstName() + " " + customer.getLastName())
+                .add("email", customer.getEmail())
+                .add("role", customer.getRole())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(jwtConfig.getSecretKey())
-                .compact();
+                .build();
+
+        return new Jwt(claims, jwtConfig.getSecretKey());
     }
 }
