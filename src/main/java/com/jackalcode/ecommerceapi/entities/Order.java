@@ -25,6 +25,9 @@ public class Order {
     @Column(name = "date")
     private Instant date;
 
+    @Column(name = "status")
+    private OrderStatus status;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "customer_id")
     private Customer customer;
