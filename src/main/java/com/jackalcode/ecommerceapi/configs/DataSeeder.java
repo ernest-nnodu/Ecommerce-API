@@ -1,9 +1,6 @@
 package com.jackalcode.ecommerceapi.configs;
 
-import com.jackalcode.ecommerceapi.entities.Cart;
-import com.jackalcode.ecommerceapi.entities.Category;
-import com.jackalcode.ecommerceapi.entities.Customer;
-import com.jackalcode.ecommerceapi.entities.Product;
+import com.jackalcode.ecommerceapi.entities.*;
 import com.jackalcode.ecommerceapi.repositories.CartRepository;
 import com.jackalcode.ecommerceapi.repositories.CategoryRepository;
 import com.jackalcode.ecommerceapi.repositories.CustomerRepository;
@@ -54,6 +51,7 @@ public class DataSeeder implements CommandLineRunner {
             customer.setLastName(randomLastName());
             customer.setEmail(generateEmail(customer.getFirstName(), customer.getLastName()));
             customer.setPassword(passwordEncoder.encode("Abcd1234!"));
+            customer.setRole(Role.USER);
             customers.add(customer);
         }
 
