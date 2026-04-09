@@ -4,10 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -20,12 +19,13 @@ public class Order {
     private Long id;
 
     @Column(name = "total_amount")
-    private Double totalAmount;
+    private BigDecimal totalAmount;
 
     @Column(name = "date")
     private Instant date;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -34,7 +34,7 @@ public class Order {
 
     @OneToMany(mappedBy = "order",
             fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<OrderItem> orderItems = new HashSet<>();
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     @OneToOne(mappedBy = "order")
     private Payment payment;
@@ -47,6 +47,12 @@ public class Order {
     public void removeOrderItem(OrderItem orderItem) {
         orderItems.remove(orderItem);
         orderItem.setOrder(null);
+    }
+
+    public void calculateTotalAmount() {
+        totalAmount = orderItems.stream()
+                .map(OrderItem::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     @Override

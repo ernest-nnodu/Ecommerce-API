@@ -9,7 +9,7 @@ spring:
         show-sql: true
     jwt:
       secret: UpWZaX4+FRlVrCwRZhUrGOWD3ryZmwhhxcqK2iecy78=
-      accessTokenExpiration: 300_000 #5mins
+      accessTokenExpiration: 7_200_000 #5mins
       refreshTokenExpiration: 604_800_000 #7days
 management:
   endpoints:

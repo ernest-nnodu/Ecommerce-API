@@ -31,6 +31,14 @@ public class GlobalExceptionHandler {
         return new ApiError(ErrorCode.CUSTOMER_ALREADY_EXISTS, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(CustomerNotAuthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiError handleCustomerNotAuthorizedException(CustomerNotAuthorizedException ex,
+                                                         HttpServletRequest request) {
+
+        return new ApiError(ErrorCode.CUSTOMER_NOT_AUTHORIZED, ex.getMessage(), request.getRequestURI());
+    }
+
     @ExceptionHandler(CategoryAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleCategoryAlreadyExistException(CategoryAlreadyExistsException ex,
@@ -71,6 +79,13 @@ public class GlobalExceptionHandler {
     public ApiError handleProductNotInCartException(ProductNotInCartException ex,
                                                     HttpServletRequest request) {
         return new ApiError(ErrorCode.PRODUCT_NOT_IN_CART, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(CartEmptyException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleCartEmptyException(CartEmptyException ex, HttpServletRequest request) {
+
+        return new ApiError(ErrorCode.CART_EMPTY, ex.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
