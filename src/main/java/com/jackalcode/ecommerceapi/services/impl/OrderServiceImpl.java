@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -39,13 +40,15 @@ public class OrderServiceImpl implements OrderService {
             throw new CartEmptyException("Cart is empty");
         }
 
-
+        //Retrieve current logged in customer
         var currentCustomer = authenticationService.getCurrentCustomer();
 
+        //Verify that current logged in customer is the owner of the cart
         if (!currentCustomer.getId().equals(cart.getCustomer().getId())) {
             throw new CustomerNotAuthorizedException("Customer not authorized to checkout order");
         }
 
+        //Generate order from the cart and persist to database
         var order = generateOrder(cart);
         order.getOrderItems().forEach(System.out::println);
         orderRepository.save(order);
@@ -53,6 +56,17 @@ public class OrderServiceImpl implements OrderService {
         cart.clearItems();
 
         return orderMapper.toOrderResponse(order);
+    }
+
+    @Override
+    public List<OrderResponse> getOrders() {
+
+        var currentCustomer = authenticationService.getCurrentCustomer();
+        List<Order> orders = orderRepository.findAllByCustomerId(currentCustomer.getId());
+
+        return orders.stream()
+                .map(orderMapper::toOrderResponse)
+                .toList();
     }
 
     private Order generateOrder(Cart cart) {
