@@ -10,4 +10,6 @@ public interface OrderService {
     OrderResponse createOrder(CheckoutRequest checkoutRequest);
 
     List<OrderResponse> getOrders();
+
+    OrderResponse getOrder(Long orderId);
 }

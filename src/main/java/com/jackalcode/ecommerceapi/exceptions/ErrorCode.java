@@ -10,5 +10,6 @@ public enum ErrorCode {
     PRODUCT_ALREADY_EXISTS,
     CART_NOT_FOUND,
     PRODUCT_NOT_IN_CART,
-    CART_EMPTY
+    CART_EMPTY,
+    ORDER_NOT_FOUND
 }

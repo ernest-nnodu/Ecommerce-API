@@ -6,6 +6,7 @@ import com.jackalcode.ecommerceapi.entities.*;
 import com.jackalcode.ecommerceapi.exceptions.CartEmptyException;
 import com.jackalcode.ecommerceapi.exceptions.CartNotFoundException;
 import com.jackalcode.ecommerceapi.exceptions.CustomerNotAuthorizedException;
+import com.jackalcode.ecommerceapi.exceptions.OrderNotFoundException;
 import com.jackalcode.ecommerceapi.mappers.OrderMapper;
 import com.jackalcode.ecommerceapi.repositories.CartRepository;
 import com.jackalcode.ecommerceapi.repositories.OrderRepository;
@@ -67,6 +68,21 @@ public class OrderServiceImpl implements OrderService {
         return orders.stream()
                 .map(orderMapper::toOrderResponse)
                 .toList();
+    }
+
+    @Override
+    public OrderResponse getOrder(Long orderId) {
+
+        var order = orderRepository.findById(orderId).orElseThrow(
+                () -> new OrderNotFoundException("Order not found with Id: " + orderId));
+
+        var currentCustomer = authenticationService.getCurrentCustomer();
+
+        if (!currentCustomer.getId().equals(order.getCustomer().getId())) {
+            throw new CustomerNotAuthorizedException("Customer not authorized to access order");
+        }
+
+        return orderMapper.toOrderResponse(order);
     }
 
     private Order generateOrder(Cart cart) {

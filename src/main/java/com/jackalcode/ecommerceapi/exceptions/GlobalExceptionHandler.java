@@ -88,9 +88,17 @@ public class GlobalExceptionHandler {
         return new ApiError(ErrorCode.CART_EMPTY, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(OrderNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleOrderNotFoundException(OrderNotFoundException ex,
+                                                 HttpServletRequest request) {
+        return new ApiError(ErrorCode.ORDER_NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+    public Map<String, String> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException ex) {
 
         var errors = new HashMap<String, String>();
 
