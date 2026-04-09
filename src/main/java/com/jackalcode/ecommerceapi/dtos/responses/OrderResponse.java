@@ -4,12 +4,14 @@ import com.jackalcode.ecommerceapi.entities.OrderStatus;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 public record OrderResponse(
 
         Long id,
-        BigDecimal totalAmount,
         Instant date,
-        OrderStatus status
+        OrderStatus status,
+        List<OrderItemResponse> items,
+        BigDecimal totalAmount
 ) {
 }
