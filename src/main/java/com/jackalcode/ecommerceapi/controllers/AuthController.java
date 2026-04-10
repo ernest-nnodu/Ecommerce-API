@@ -1,6 +1,6 @@
 package com.jackalcode.ecommerceapi.controllers;
 
-import com.jackalcode.ecommerceapi.configs.JwtConfig;
+import com.jackalcode.ecommerceapi.jwt.JwtConfig;
 import com.jackalcode.ecommerceapi.dtos.requests.LoginRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.CustomerResponse;
 import com.jackalcode.ecommerceapi.dtos.responses.JwtResponse;

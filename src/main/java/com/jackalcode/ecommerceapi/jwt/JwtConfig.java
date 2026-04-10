@@ -1,4 +1,4 @@
-package com.jackalcode.ecommerceapi.configs;
+package com.jackalcode.ecommerceapi.jwt;
 
 import io.jsonwebtoken.security.Keys;
 import lombok.Data;

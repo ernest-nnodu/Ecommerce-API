@@ -1,6 +1,5 @@
 package com.jackalcode.ecommerceapi.jwt;
 
-import com.jackalcode.ecommerceapi.configs.JwtConfig;
 import com.jackalcode.ecommerceapi.entities.Customer;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

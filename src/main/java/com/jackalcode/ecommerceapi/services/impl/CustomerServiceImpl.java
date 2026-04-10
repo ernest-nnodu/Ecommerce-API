@@ -7,6 +7,7 @@ import com.jackalcode.ecommerceapi.entities.Cart;
 import com.jackalcode.ecommerceapi.entities.Customer;
 import com.jackalcode.ecommerceapi.entities.Role;
 import com.jackalcode.ecommerceapi.exceptions.CustomerAlreadyExistException;
+import com.jackalcode.ecommerceapi.exceptions.CustomerNotAuthorizedException;
 import com.jackalcode.ecommerceapi.exceptions.CustomerNotFoundException;
 import com.jackalcode.ecommerceapi.mappers.CustomerMapper;
 import com.jackalcode.ecommerceapi.repositories.CartRepository;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -27,6 +29,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final CartRepository cartRepository;
     private final CustomerMapper customerMapper;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationService authenticationService;
 
     @Override
     public List<CustomerResponse> getAllCustomers() {
@@ -37,6 +40,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerResponse getCustomerById(Long id) {
+
+        validateCustomerId(id);
 
         Customer customer = getCustomerEntity(id);
 
@@ -71,6 +76,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional
     public CustomerResponse updateCustomer(Long id, UpdateCustomerRequest updateCustomerRequest) {
 
+        validateCustomerId(id);
+
         Customer existingCustomer = getCustomerEntity(id);
 
         //If customer email need updating, check if new email already exist in the database
@@ -82,6 +89,13 @@ public class CustomerServiceImpl implements CustomerService {
 
         customerMapper.updateCustomer(updateCustomerRequest, existingCustomer);
         return customerMapper.toCustomerResponse(customerRepository.save(existingCustomer));
+    }
+
+    private void validateCustomerId(Long id) {
+        var currentCustomer = authenticationService.getCurrentCustomer();
+        if (!Objects.equals(currentCustomer.getId(), id)) {
+            throw new CustomerNotAuthorizedException("Customer not authorized");
+        }
     }
 
     private Customer getCustomerEntity(Long id) {
