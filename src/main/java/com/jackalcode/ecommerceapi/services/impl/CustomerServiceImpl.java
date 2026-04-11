@@ -7,6 +7,7 @@ import com.jackalcode.ecommerceapi.entities.Cart;
 import com.jackalcode.ecommerceapi.entities.Customer;
 import com.jackalcode.ecommerceapi.entities.Role;
 import com.jackalcode.ecommerceapi.exceptions.CustomerAlreadyExistException;
+import com.jackalcode.ecommerceapi.exceptions.CustomerNotFoundException;
 import com.jackalcode.ecommerceapi.mappers.CustomerMapper;
 import com.jackalcode.ecommerceapi.repositories.CartRepository;
 import com.jackalcode.ecommerceapi.repositories.CustomerRepository;
@@ -29,7 +30,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final AuthenticationService authenticationService;
 
     @Override
-    public List<CustomerResponse> getAllCustomers() {
+    public List<CustomerResponse> getCustomers() {
         return customerRepository.findAll().stream()
                 .map(customerMapper::toCustomerResponse)
                 .toList();
@@ -41,6 +42,16 @@ public class CustomerServiceImpl implements CustomerService {
         Customer currentCustomer = authenticationService.getCurrentCustomer();
 
         return customerMapper.toCustomerResponse(currentCustomer);
+    }
+
+    @Override
+    public CustomerResponse getCustomerById(Long customerId) {
+
+        var customer = customerRepository.findById(customerId).orElseThrow(
+                () -> new CustomerNotFoundException(customerId.toString())
+        );
+
+        return customerMapper.toCustomerResponse(customer);
     }
 
     @Override

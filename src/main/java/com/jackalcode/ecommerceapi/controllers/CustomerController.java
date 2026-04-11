@@ -10,19 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/customers")
 @AllArgsConstructor
 public class CustomerController {
 
     private final CustomerService customerService;
-
-    @GetMapping
-    public ResponseEntity<List<CustomerResponse>> getAllCustomers() {
-        return ResponseEntity.ok(customerService.getAllCustomers());
-    }
 
     @GetMapping(path = "/me")
     public ResponseEntity<CustomerResponse> getCustomer() {
