@@ -12,46 +12,44 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "/carts")
+@RequestMapping(path = "customers/carts")
 @AllArgsConstructor
 public class CartController {
 
     private final CartService cartService;
 
-    @PostMapping(path = "/{id}/items")
-    public ResponseEntity<CartItemResponse> addItem(@PathVariable(name = "id") Long cartId,
-                                                    @Valid @RequestBody AddToCartRequest addToCartRequest) {
+    @PostMapping(path = "/items")
+    public ResponseEntity<CartItemResponse> addItem(
+            @Valid @RequestBody AddToCartRequest addToCartRequest) {
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(cartService.addItemToCart(cartId, addToCartRequest));
+                .body(cartService.addItemToCart(addToCartRequest));
     }
 
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<CartResponse> getCart(@PathVariable(name = "id") Long cartId) {
+    @GetMapping
+    public ResponseEntity<CartResponse> getCart() {
 
-        return ResponseEntity.ok(cartService.getCart(cartId));
+        return ResponseEntity.ok(cartService.getCart());
     }
 
-    @PutMapping(path = "/{id}/items/{productId}")
-    public ResponseEntity<CartItemResponse> updateCart(@PathVariable(name = "id") Long cartId,
-                                                       @PathVariable Long productId,
+    @PutMapping(path = "/items/{id}")
+    public ResponseEntity<CartItemResponse> updateCart(@PathVariable(name = "id") Long productId,
                                                        @Valid @RequestBody UpdateCartRequest updateCartRequest) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(cartService.updateCart(cartId, productId,updateCartRequest));
+                .body(cartService.updateCart(productId,updateCartRequest));
     }
 
-    @DeleteMapping(path = "/{id}/items/{productId}")
-    public ResponseEntity<Void> removeItemFromCart(@PathVariable(name = "id") Long cartId,
-                                                   @PathVariable Long productId) {
+    @DeleteMapping(path = "/items/{id}")
+    public ResponseEntity<Void> removeItemFromCart(@PathVariable(name = "id") Long productId) {
 
-        cartService.removeItemFromCart(cartId, productId);
+        cartService.removeItemFromCart(productId);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping(path = "/{id}/items")
-    public ResponseEntity<Void> removeAllFromCart(@PathVariable(name = "id") Long cartId) {
+    @DeleteMapping(path = "/items")
+    public ResponseEntity<Void> clearCart() {
 
-        cartService.clearCart(cartId);
+        cartService.clearCart();
         return ResponseEntity.noContent().build();
     }
 }
