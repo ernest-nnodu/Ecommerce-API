@@ -39,13 +39,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponse getCustomerById(Long id) {
+    public CustomerResponse getCustomer() {
 
-        validateCustomerId(id);
+        Customer currentCustomer = authenticationService.getCurrentCustomer();
 
-        Customer customer = getCustomerEntity(id);
-
-        return customerMapper.toCustomerResponse(customer);
+        return customerMapper.toCustomerResponse(currentCustomer);
     }
 
     @Override
@@ -74,21 +72,19 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    public CustomerResponse updateCustomer(Long id, UpdateCustomerRequest updateCustomerRequest) {
+    public CustomerResponse updateCustomer(UpdateCustomerRequest updateCustomerRequest) {
 
-        validateCustomerId(id);
-
-        Customer existingCustomer = getCustomerEntity(id);
+        Customer currentCustomer = authenticationService.getCurrentCustomer();
 
         //If customer email need updating, check if new email already exist in the database
-        if (!existingCustomer.getEmail().equals(updateCustomerRequest.email()) &&
+        if (!currentCustomer.getEmail().equals(updateCustomerRequest.email()) &&
         customerRepository.existsByEmail(updateCustomerRequest.email())) {
             throw new CustomerAlreadyExistException("Customer already exist with email: " +
                     updateCustomerRequest.email());
         }
 
-        customerMapper.updateCustomer(updateCustomerRequest, existingCustomer);
-        return customerMapper.toCustomerResponse(customerRepository.save(existingCustomer));
+        customerMapper.updateCustomer(updateCustomerRequest, currentCustomer);
+        return customerMapper.toCustomerResponse(customerRepository.save(currentCustomer));
     }
 
     private void validateCustomerId(Long id) {

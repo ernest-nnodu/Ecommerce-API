@@ -10,9 +10,9 @@ public interface CustomerService {
 
     List<CustomerResponse>  getAllCustomers();
 
-    CustomerResponse getCustomerById(Long id);
+    CustomerResponse getCustomer();
 
     CustomerResponse registerCustomer(RegisterCustomerRequest registerCustomerRequest);
 
-    CustomerResponse updateCustomer(Long id, UpdateCustomerRequest updateCustomerRequest);
+    CustomerResponse updateCustomer(UpdateCustomerRequest updateCustomerRequest);
 }

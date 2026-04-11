@@ -81,6 +81,6 @@ public class AuthController {
         var userId = (Long) Objects.requireNonNull(
                 SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
 
-        return ResponseEntity.ok(customerService.getCustomerById(userId));
+        return ResponseEntity.ok(customerService.getCustomer());
     }
 }
