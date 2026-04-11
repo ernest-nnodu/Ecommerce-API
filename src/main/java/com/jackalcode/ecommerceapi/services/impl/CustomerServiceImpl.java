@@ -7,8 +7,6 @@ import com.jackalcode.ecommerceapi.entities.Cart;
 import com.jackalcode.ecommerceapi.entities.Customer;
 import com.jackalcode.ecommerceapi.entities.Role;
 import com.jackalcode.ecommerceapi.exceptions.CustomerAlreadyExistException;
-import com.jackalcode.ecommerceapi.exceptions.CustomerNotAuthorizedException;
-import com.jackalcode.ecommerceapi.exceptions.CustomerNotFoundException;
 import com.jackalcode.ecommerceapi.mappers.CustomerMapper;
 import com.jackalcode.ecommerceapi.repositories.CartRepository;
 import com.jackalcode.ecommerceapi.repositories.CustomerRepository;
@@ -19,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -85,19 +82,5 @@ public class CustomerServiceImpl implements CustomerService {
 
         customerMapper.updateCustomer(updateCustomerRequest, currentCustomer);
         return customerMapper.toCustomerResponse(customerRepository.save(currentCustomer));
-    }
-
-    private void validateCustomerId(Long id) {
-        var currentCustomer = authenticationService.getCurrentCustomer();
-        if (!Objects.equals(currentCustomer.getId(), id)) {
-            throw new CustomerNotAuthorizedException("Customer not authorized");
-        }
-    }
-
-    private Customer getCustomerEntity(Long id) {
-
-        return customerRepository.findById(id).orElseThrow(
-                () -> new CustomerNotFoundException("Customer not found with id: " + id)
-        );
     }
 }
