@@ -1,13 +1,15 @@
 package com.jackalcode.ecommerceapi.controllers;
 
+import com.jackalcode.ecommerceapi.dtos.requests.CategoryRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.CustomerResponse;
+import com.jackalcode.ecommerceapi.entities.Category;
+import com.jackalcode.ecommerceapi.services.CategoryService;
 import com.jackalcode.ecommerceapi.services.CustomerService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,6 +19,7 @@ import java.util.List;
 public class AdminController {
 
     private final CustomerService customerService;
+    private final CategoryService categoryService;
 
     @GetMapping(path = "/customers")
     public ResponseEntity<List<CustomerResponse>> getCustomers() {
@@ -28,5 +31,21 @@ public class AdminController {
     public ResponseEntity<CustomerResponse> getCustomer(@PathVariable(name = "id") Long customerId) {
 
         return ResponseEntity.ok(customerService.getCustomerById(customerId));
+    }
+
+    @PostMapping(path = "/categories")
+    public ResponseEntity<Category> createCategory(
+            @Valid @RequestBody CategoryRequest categoryRequest) {
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(categoryService.createCategory(categoryRequest));
+    }
+
+    @PutMapping(path = "/categories/{id}")
+    public ResponseEntity<Category> updateCategory(
+            @PathVariable(name = "id") Long categoryId,
+            @Valid @RequestBody CategoryRequest categoryRequest) {
+
+        return ResponseEntity.ok(categoryService.updateCategory(categoryId, categoryRequest));
     }
 }
