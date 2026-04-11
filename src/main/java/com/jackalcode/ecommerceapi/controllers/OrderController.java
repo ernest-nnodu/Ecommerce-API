@@ -11,24 +11,25 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping(path = "/customers/orders")
 @AllArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping(path = "/checkout")
+    @PostMapping
     public ResponseEntity<OrderResponse> checkout(@Valid @RequestBody CheckoutRequest checkoutRequest) {
 
         return ResponseEntity.ok(orderService.createOrder(checkoutRequest));
     }
 
-    @GetMapping(path = "/orders")
+    @GetMapping
     public ResponseEntity<List<OrderResponse>> getOrders() {
 
         return ResponseEntity.ok(orderService.getOrders());
     }
 
-    @GetMapping(path = "orders/{id}")
+    @GetMapping(path = "/{id}")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable(name = "id") Long orderId) {
 
         return ResponseEntity.ok(orderService.getOrder(orderId));
