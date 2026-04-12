@@ -9,5 +9,6 @@ import org.mapstruct.Mapping;
 public interface OrderMapper {
 
     @Mapping(target = "items", source = "orderItems")
+    @Mapping(target = "customerId", expression = "java(order.getCustomer().getId())")
     OrderResponse toOrderResponse(Order order);
 }

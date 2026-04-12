@@ -3,10 +3,12 @@ package com.jackalcode.ecommerceapi.controllers;
 import com.jackalcode.ecommerceapi.dtos.requests.CategoryRequest;
 import com.jackalcode.ecommerceapi.dtos.requests.ProductRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.CustomerResponse;
+import com.jackalcode.ecommerceapi.dtos.responses.OrderResponse;
 import com.jackalcode.ecommerceapi.dtos.responses.ProductResponse;
 import com.jackalcode.ecommerceapi.entities.Category;
 import com.jackalcode.ecommerceapi.services.CategoryService;
 import com.jackalcode.ecommerceapi.services.CustomerService;
+import com.jackalcode.ecommerceapi.services.OrderService;
 import com.jackalcode.ecommerceapi.services.ProductService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -24,6 +26,7 @@ public class AdminController {
     private final CustomerService customerService;
     private final CategoryService categoryService;
     private final ProductService productService;
+    private final OrderService orderService;
 
     @GetMapping(path = "/customers")
     public ResponseEntity<List<CustomerResponse>> getCustomers() {
@@ -74,5 +77,17 @@ public class AdminController {
 
         productService.deleteProduct(productId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(path = "/orders")
+    public ResponseEntity<List<OrderResponse>> getOrders() {
+
+        return ResponseEntity.ok(orderService.getOrders());
+    }
+
+    @GetMapping(path = "/orders/{id}")
+    public ResponseEntity<OrderResponse> getOrder(@PathVariable(name = "id") Long orderId) {
+
+        return ResponseEntity.ok(orderService.getOrder(orderId));
     }
 }

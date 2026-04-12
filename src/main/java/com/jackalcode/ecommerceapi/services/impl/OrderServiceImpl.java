@@ -63,7 +63,9 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderResponse> getOrders() {
 
         var currentCustomer = authenticationService.getCurrentCustomer();
-        List<Order> orders = orderRepository.findAllByCustomerId(currentCustomer.getId());
+
+        List<Order> orders = currentCustomer.getRole().equals(Role.ADMIN) ? orderRepository.findAll() :
+         orderRepository.findAllByCustomerId(currentCustomer.getId());
 
         return orders.stream()
                 .map(orderMapper::toOrderResponse)
@@ -78,7 +80,8 @@ public class OrderServiceImpl implements OrderService {
 
         var currentCustomer = authenticationService.getCurrentCustomer();
 
-        if (!currentCustomer.getId().equals(order.getCustomer().getId())) {
+        if (!currentCustomer.getId().equals(order.getCustomer().getId()) &&
+                !currentCustomer.getRole().equals(Role.ADMIN)) {
             throw new CustomerNotAuthorizedException("Customer not authorized to access order");
         }
 
