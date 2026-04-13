@@ -33,8 +33,9 @@ public class Customer {
     @Column(name = "password")
     private String password;
 
-    //@OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
-    //private Cart cart;
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     List<Order> orders = new ArrayList<>();

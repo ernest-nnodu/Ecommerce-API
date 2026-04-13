@@ -7,6 +7,10 @@ spring:
         password: springstudent
     jpa:
         show-sql: true
+    jwt:
+      secret: UpWZaX4+FRlVrCwRZhUrGOWD3ryZmwhhxcqK2iecy78=
+      accessTokenExpiration: 7_200_000 #5mins
+      refreshTokenExpiration: 604_800_000 #7days
 management:
   endpoints:
     web:

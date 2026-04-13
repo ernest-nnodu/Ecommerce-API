@@ -7,13 +7,13 @@ import com.jackalcode.ecommerceapi.dtos.responses.CartResponse;
 
 public interface CartService {
 
-    CartItemResponse addItemToCart(Long cartId, AddToCartRequest addToCartRequest);
+    CartItemResponse addItemToCart(AddToCartRequest addToCartRequest);
 
-    CartResponse getCart(Long cartId);
+    CartResponse getCart();
 
-    CartItemResponse updateCart(Long cartId, Long productId, UpdateCartRequest updateCartRequest);
+    CartItemResponse updateCart(Long productId, UpdateCartRequest updateCartRequest);
 
-    void removeItemFromCart(Long cartId, Long productId);
+    void removeItemFromCart(Long productId);
 
-    void clearCart(Long cartId);
+    void clearCart();
 }

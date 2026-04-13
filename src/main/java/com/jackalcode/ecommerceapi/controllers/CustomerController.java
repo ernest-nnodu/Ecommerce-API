@@ -10,8 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/customers")
 @AllArgsConstructor
@@ -19,15 +17,9 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
-    @GetMapping
-    public ResponseEntity<List<CustomerResponse>> getAllCustomers() {
-        return ResponseEntity.ok(customerService.getAllCustomers());
-    }
-
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<CustomerResponse> getCustomerById(
-            @PathVariable(name = "id") Long customerId) {
-        return ResponseEntity.ok(customerService.getCustomerById(customerId));
+    @GetMapping(path = "/me")
+    public ResponseEntity<CustomerResponse> getCustomer() {
+        return ResponseEntity.ok(customerService.getCustomer());
     }
 
     @PostMapping
@@ -38,11 +30,10 @@ public class CustomerController {
                 .body(customerService.registerCustomer(registerCustomerRequest));
     }
 
-    @PutMapping(path = "/{id}")
+    @PutMapping(path = "/me")
     public ResponseEntity<CustomerResponse> updateCustomer(
-            @PathVariable(name = "id") Long customerId,
             @Valid @RequestBody UpdateCustomerRequest updateCustomerRequest) {
 
-        return ResponseEntity.ok(customerService.updateCustomer(customerId, updateCustomerRequest));
+        return ResponseEntity.ok(customerService.updateCustomer(updateCustomerRequest));
     }
 }

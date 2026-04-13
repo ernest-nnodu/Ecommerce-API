@@ -1,9 +1,6 @@
-package com.jackalcode.ecommerceapi.config;
+package com.jackalcode.ecommerceapi.configs;
 
-import com.jackalcode.ecommerceapi.entities.Cart;
-import com.jackalcode.ecommerceapi.entities.Category;
-import com.jackalcode.ecommerceapi.entities.Customer;
-import com.jackalcode.ecommerceapi.entities.Product;
+import com.jackalcode.ecommerceapi.entities.*;
 import com.jackalcode.ecommerceapi.repositories.CartRepository;
 import com.jackalcode.ecommerceapi.repositories.CategoryRepository;
 import com.jackalcode.ecommerceapi.repositories.CustomerRepository;
@@ -11,15 +8,13 @@ import com.jackalcode.ecommerceapi.repositories.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -31,6 +26,7 @@ public class DataSeeder implements CommandLineRunner {
     private final CartRepository cartRepo;
 
     private final Random random = new Random();
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -40,6 +36,15 @@ public class DataSeeder implements CommandLineRunner {
             System.out.println("Data already seeded");
             return;
         }
+
+        //Insert customer admin
+        var admin = new Customer();
+        admin.setFirstName("Jack");
+        admin.setLastName("Alice");
+        admin.setEmail("jack.alice@mail.com");
+        admin.setPassword(passwordEncoder.encode("AdminPassword1!"));
+        admin.setRole(Role.ADMIN);
+        customerRepo.save(admin);
 
         // =========================
         // 1. Customers (10)
@@ -51,7 +56,8 @@ public class DataSeeder implements CommandLineRunner {
             customer.setFirstName(randomFirstName());
             customer.setLastName(randomLastName());
             customer.setEmail(generateEmail(customer.getFirstName(), customer.getLastName()));
-            customer.setPassword(generateRandomPassword(8));
+            customer.setPassword(passwordEncoder.encode("Abcd1234!"));
+            customer.setRole(Role.USER);
             customers.add(customer);
         }
 
@@ -120,47 +126,6 @@ public class DataSeeder implements CommandLineRunner {
 
     private String generateEmail(String first, String last) {
         return first.toLowerCase() + "." + last.toLowerCase() + random.nextInt(1000) + "@mail.com";
-    }
-
-    private String generateRandomPassword(int length) {
-        String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String lower = "abcdefghijklmnopqrstuvwxyz";
-        String digits = "0123456789";
-        String special = "!@#$%^&*()-_=+<>?";
-
-        String allChars = upper + lower + digits + special;
-
-        SecureRandom random = new SecureRandom();
-        StringBuilder password = new StringBuilder();
-
-        // Ensure at least one of each type
-        password.append(upper.charAt(random.nextInt(upper.length())));
-        password.append(lower.charAt(random.nextInt(lower.length())));
-        password.append(digits.charAt(random.nextInt(digits.length())));
-        password.append(special.charAt(random.nextInt(special.length())));
-
-        // Fill remaining length
-        for (int i = 4; i < length; i++) {
-            password.append(allChars.charAt(random.nextInt(allChars.length())));
-        }
-
-        // Shuffle to avoid predictable pattern
-        return shuffleString(password.toString(), random);
-    }
-
-    private String shuffleString(String input, SecureRandom random) {
-        List<Character> characters = input.chars()
-                .mapToObj(c -> (char) c)
-                .collect(Collectors.toList());
-
-        Collections.shuffle(characters, random);
-
-        StringBuilder shuffled = new StringBuilder();
-        for (char c : characters) {
-            shuffled.append(c);
-        }
-
-        return shuffled.toString();
     }
 
     private String randomCategory() {

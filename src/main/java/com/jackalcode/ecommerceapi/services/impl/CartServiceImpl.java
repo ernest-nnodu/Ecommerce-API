@@ -25,12 +25,14 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
     private final CartMapper cartMapper;
+    private final AuthenticationService authenticationService;
 
     @Override
     @Transactional
-    public CartItemResponse addItemToCart(Long cartId, AddToCartRequest addToCartRequest) {
+    public CartItemResponse addItemToCart(AddToCartRequest addToCartRequest) {
 
-        var cart = getCartEntity(cartId);
+        var currentCustomer = authenticationService.getCurrentCustomer();
+        var cart = cartRepository.findByCustomerId(currentCustomer.getId());
 
         var product = getProductEntity(addToCartRequest.productId());
 
@@ -52,16 +54,19 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartResponse getCart(Long cartId) {
-        var cart = getCartEntity(cartId);
+    public CartResponse getCart() {
+
+        var currentCustomer = authenticationService.getCurrentCustomer();
+        var cart = cartRepository.findByCustomerId(currentCustomer.getId());
 
         return cartMapper.toCartResponse(cart);
     }
 
     @Override
-    public CartItemResponse updateCart(Long cartId, Long productId, UpdateCartRequest updateCartRequest) {
+    public CartItemResponse updateCart(Long productId, UpdateCartRequest updateCartRequest) {
 
-        var cart = getCartEntity(cartId);
+        var currentCustomer = authenticationService.getCurrentCustomer();
+        var cart = cartRepository.findByCustomerId(currentCustomer.getId());
         var item = cart.getCartItem(productId);
 
         if (item == null) {
@@ -76,9 +81,10 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void removeItemFromCart(Long cartId, Long productId) {
+    public void removeItemFromCart(Long productId) {
 
-        var cart = getCartEntity(cartId);
+        var currentCustomer = authenticationService.getCurrentCustomer();
+        var cart = cartRepository.findByCustomerId(currentCustomer.getId());
         var item = cart.getCartItem(productId);
 
         if (item == null) {
@@ -92,17 +98,12 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void clearCart(Long cartId) {
+    public void clearCart() {
 
-        var cart = getCartEntity(cartId);
+        var currentCustomer = authenticationService.getCurrentCustomer();
+        var cart = cartRepository.findByCustomerId(currentCustomer.getId());
         cart.clearItems();
         cartRepository.save(cart);
-    }
-
-    private Cart getCartEntity(Long cartId) {
-        return cartRepository.findById(cartId).orElseThrow(
-                () -> new CartNotFoundException("Cart not found with id: " + cartId)
-        );
     }
 
     private Product getProductEntity(Long productId) {
