@@ -1,6 +1,7 @@
 package com.jackalcode.ecommerceapi.controllers;
 
 import com.jackalcode.ecommerceapi.dtos.requests.CheckoutRequest;
+import com.jackalcode.ecommerceapi.dtos.responses.CheckoutResponse;
 import com.jackalcode.ecommerceapi.dtos.responses.OrderResponse;
 import com.jackalcode.ecommerceapi.services.OrderService;
 import jakarta.validation.Valid;
@@ -18,7 +19,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<OrderResponse> checkout(@Valid @RequestBody CheckoutRequest checkoutRequest) {
+    public ResponseEntity<CheckoutResponse> checkout(@Valid @RequestBody CheckoutRequest checkoutRequest) {
 
         return ResponseEntity.ok(orderService.createOrder(checkoutRequest));
     }

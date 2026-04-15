@@ -23,3 +23,4 @@ management:
           enabled: true
 stripe:
   secret: ${STRIPE_SECRET}
+websiteUrl: http://localhost:4242

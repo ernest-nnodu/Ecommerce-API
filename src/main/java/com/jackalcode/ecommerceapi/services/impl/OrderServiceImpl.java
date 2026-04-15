@@ -1,26 +1,29 @@
 package com.jackalcode.ecommerceapi.services.impl;
 
 import com.jackalcode.ecommerceapi.dtos.requests.CheckoutRequest;
+import com.jackalcode.ecommerceapi.dtos.responses.CheckoutResponse;
 import com.jackalcode.ecommerceapi.dtos.responses.OrderResponse;
 import com.jackalcode.ecommerceapi.entities.*;
-import com.jackalcode.ecommerceapi.exceptions.CartEmptyException;
-import com.jackalcode.ecommerceapi.exceptions.CartNotFoundException;
-import com.jackalcode.ecommerceapi.exceptions.CustomerNotAuthorizedException;
-import com.jackalcode.ecommerceapi.exceptions.OrderNotFoundException;
+import com.jackalcode.ecommerceapi.exceptions.*;
 import com.jackalcode.ecommerceapi.mappers.OrderMapper;
 import com.jackalcode.ecommerceapi.repositories.CartRepository;
 import com.jackalcode.ecommerceapi.repositories.OrderRepository;
 import com.jackalcode.ecommerceapi.services.OrderService;
-import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
+import com.stripe.exception.StripeException;
+import com.stripe.model.checkout.Session;
+import com.stripe.param.checkout.SessionCreateParams;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
@@ -28,9 +31,12 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final AuthenticationService authenticationService;
 
+    @Value("${websiteUrl}")
+    private String websiteUrl;
+
     @Transactional
     @Override
-    public OrderResponse createOrder(CheckoutRequest checkoutRequest) {
+    public CheckoutResponse createOrder(CheckoutRequest checkoutRequest) {
 
         //Retrieve cart from database
         var cart = cartRepository.findById(checkoutRequest.cartId())
@@ -54,9 +60,40 @@ public class OrderServiceImpl implements OrderService {
         order.getOrderItems().forEach(System.out::println);
         orderRepository.save(order);
 
-        cart.clearItems();
+        //Create checkout session
+        try {
+            var builder = SessionCreateParams.builder()
+                    .setMode(SessionCreateParams.Mode.PAYMENT)
+                    .setSuccessUrl(websiteUrl + "/checkout-success")
+                    .setCancelUrl(websiteUrl + "/checkout-cancel");
 
-        return orderMapper.toOrderResponse(order);
+            order.getOrderItems().forEach(item -> {
+                var lineItem = SessionCreateParams.LineItem.builder()
+                        .setQuantity(Long.valueOf(item.getQuantity()))
+                        .setPriceData(
+                                SessionCreateParams.LineItem.PriceData.builder()
+                                        .setCurrency("GBP")
+                                        .setUnitAmountDecimal(item.getPrice()
+                                                .multiply(BigDecimal.valueOf(100)))
+                                        .setProductData(
+                                                SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                                        .setName(item.getProduct().getName())
+                                                        .build()
+                                        ).build()
+                        ).build();
+                builder.addLineItem(lineItem);
+            });
+
+            var session = Session.create(builder.build());
+            cart.clearItems();
+
+            return new CheckoutResponse(order.getId(), session.getUrl());
+
+        } catch (StripeException ex) {
+            System.out.println(ex.getMessage());
+            orderRepository.delete(order);
+            throw new CheckoutException(ex.getMessage());
+        }
     }
 
     @Override
