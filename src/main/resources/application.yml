@@ -23,4 +23,5 @@ management:
           enabled: true
 stripe:
   secret: ${STRIPE_SECRET}
+  webhookSecret: ${STRIPE_WEBHOOK_SECRET}
 websiteUrl: http://localhost:4242

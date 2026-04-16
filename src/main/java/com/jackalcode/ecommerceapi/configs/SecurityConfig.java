@@ -53,6 +53,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/admin/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.PUT, "/admin/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.DELETE, "/admin/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/customers/orders/checkout-webhook").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(c ->

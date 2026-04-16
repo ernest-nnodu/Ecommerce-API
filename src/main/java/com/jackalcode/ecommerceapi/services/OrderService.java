@@ -1,6 +1,7 @@
 package com.jackalcode.ecommerceapi.services;
 
 import com.jackalcode.ecommerceapi.dtos.requests.CheckoutRequest;
+import com.jackalcode.ecommerceapi.dtos.requests.WebhookRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.CheckoutResponse;
 import com.jackalcode.ecommerceapi.dtos.responses.OrderResponse;
 
@@ -13,4 +14,6 @@ public interface OrderService {
     List<OrderResponse> getOrders();
 
     OrderResponse getOrder(Long orderId);
+
+    void handleWebhookEvent(WebhookRequest webhookRequest);
 }

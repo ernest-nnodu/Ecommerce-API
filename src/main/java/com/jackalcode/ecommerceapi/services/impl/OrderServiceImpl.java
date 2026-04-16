@@ -1,8 +1,11 @@
 package com.jackalcode.ecommerceapi.services.impl;
 
 import com.jackalcode.ecommerceapi.dtos.requests.CheckoutRequest;
+import com.jackalcode.ecommerceapi.dtos.requests.WebhookRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.CheckoutResponse;
 import com.jackalcode.ecommerceapi.dtos.responses.OrderResponse;
+import com.jackalcode.ecommerceapi.dtos.responses.PaymentResponse;
+import com.jackalcode.ecommerceapi.dtos.responses.PaymentStatus;
 import com.jackalcode.ecommerceapi.entities.*;
 import com.jackalcode.ecommerceapi.exceptions.*;
 import com.jackalcode.ecommerceapi.mappers.OrderMapper;
@@ -55,6 +58,7 @@ public class OrderServiceImpl implements OrderService {
         order.getOrderItems().forEach(System.out::println);
         orderRepository.save(order);
 
+        //Create checkout session
         try {
             CheckoutSession checkoutSession = paymentService.createCheckoutSession(order);
             cart.clearItems();
@@ -65,6 +69,26 @@ public class OrderServiceImpl implements OrderService {
             //Delete order if checkout unsuccessful
             orderRepository.delete(order);
             throw new CheckoutException(ex.getMessage());
+        }
+    }
+
+    @Transactional
+    public void handleWebhookEvent(WebhookRequest webhookRequest) {
+
+        PaymentResponse paymentResponse = paymentService.processWebhookRequest(webhookRequest);
+
+        if (paymentResponse != null) {
+            var order = orderRepository.findById(paymentResponse.orderId()).orElseThrow(
+                    () -> new OrderNotFoundException("Order not found with id: " + paymentResponse.orderId())
+            );
+
+            if (paymentResponse.status().equals(PaymentStatus.SUCCESS)) {
+                order.setStatus(OrderStatus.PAID);
+            } else {
+                order.setStatus(OrderStatus.FAILED);
+            }
+
+            orderRepository.save(order);
         }
     }
 

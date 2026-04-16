@@ -1,19 +1,21 @@
 package com.jackalcode.ecommerceapi.controllers;
 
 import com.jackalcode.ecommerceapi.dtos.requests.CheckoutRequest;
+import com.jackalcode.ecommerceapi.dtos.requests.WebhookRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.CheckoutResponse;
 import com.jackalcode.ecommerceapi.dtos.responses.OrderResponse;
 import com.jackalcode.ecommerceapi.services.OrderService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/customers/orders")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
@@ -22,6 +24,14 @@ public class OrderController {
     public ResponseEntity<CheckoutResponse> checkout(@Valid @RequestBody CheckoutRequest checkoutRequest) {
 
         return ResponseEntity.ok(orderService.createOrder(checkoutRequest));
+    }
+
+    @PostMapping(path = "/checkout-webhook")
+    public ResponseEntity<Void> checkoutWebhook(@RequestHeader Map<String, String> headers,
+                                                @RequestBody String payload) {
+
+        orderService.handleWebhookEvent(new WebhookRequest(headers, payload));
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping

@@ -120,4 +120,11 @@ public class GlobalExceptionHandler {
 
         return new ApiError(ErrorCode.CHECKOUT_UNSUCCESSFUL, ex.getMessage(), request.getRequestURI());
     }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiError handleException(Exception ex, HttpServletRequest request) {
+
+        return new ApiError(ErrorCode.EXCEPTION, ex.getMessage(), request.getRequestURI());
+    }
 }
