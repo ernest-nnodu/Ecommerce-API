@@ -1,6 +1,4 @@
-package com.jackalcode.ecommerceapi.dtos.responses;
-
-import com.jackalcode.ecommerceapi.entities.OrderStatus;
+package com.jackalcode.ecommerceapi.order;
 
 import java.math.BigDecimal;
 import java.time.Instant;

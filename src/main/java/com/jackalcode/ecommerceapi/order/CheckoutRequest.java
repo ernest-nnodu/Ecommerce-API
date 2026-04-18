@@ -1,4 +1,4 @@
-package com.jackalcode.ecommerceapi.dtos.requests;
+package com.jackalcode.ecommerceapi.order;
 
 import jakarta.validation.constraints.NotNull;
 

@@ -1,4 +1,4 @@
-package com.jackalcode.ecommerceapi.services;
+package com.jackalcode.ecommerceapi.order;
 
 public record CheckoutSession(
         String sessionUrl

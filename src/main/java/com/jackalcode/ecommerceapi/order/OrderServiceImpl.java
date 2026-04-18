@@ -1,21 +1,15 @@
-package com.jackalcode.ecommerceapi.services.impl;
+package com.jackalcode.ecommerceapi.order;
 
 import com.jackalcode.ecommerceapi.cart.Cart;
 import com.jackalcode.ecommerceapi.cart.CartItem;
-import com.jackalcode.ecommerceapi.dtos.requests.CheckoutRequest;
 import com.jackalcode.ecommerceapi.dtos.requests.WebhookRequest;
-import com.jackalcode.ecommerceapi.dtos.responses.CheckoutResponse;
-import com.jackalcode.ecommerceapi.dtos.responses.OrderResponse;
 import com.jackalcode.ecommerceapi.dtos.responses.PaymentResponse;
 import com.jackalcode.ecommerceapi.dtos.responses.PaymentStatus;
 import com.jackalcode.ecommerceapi.entities.*;
 import com.jackalcode.ecommerceapi.exceptions.*;
-import com.jackalcode.ecommerceapi.mappers.OrderMapper;
 import com.jackalcode.ecommerceapi.cart.CartRepository;
-import com.jackalcode.ecommerceapi.repositories.OrderRepository;
-import com.jackalcode.ecommerceapi.services.CheckoutSession;
-import com.jackalcode.ecommerceapi.services.OrderService;
 import com.jackalcode.ecommerceapi.services.PaymentService;
+import com.jackalcode.ecommerceapi.services.impl.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

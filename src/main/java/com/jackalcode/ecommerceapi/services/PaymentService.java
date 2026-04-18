@@ -2,7 +2,8 @@ package com.jackalcode.ecommerceapi.services;
 
 import com.jackalcode.ecommerceapi.dtos.requests.WebhookRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.PaymentResponse;
-import com.jackalcode.ecommerceapi.entities.Order;
+import com.jackalcode.ecommerceapi.order.CheckoutSession;
+import com.jackalcode.ecommerceapi.order.Order;
 
 public interface PaymentService {
 

@@ -1,10 +1,6 @@
-package com.jackalcode.ecommerceapi.controllers;
+package com.jackalcode.ecommerceapi.order;
 
-import com.jackalcode.ecommerceapi.dtos.requests.CheckoutRequest;
 import com.jackalcode.ecommerceapi.dtos.requests.WebhookRequest;
-import com.jackalcode.ecommerceapi.dtos.responses.CheckoutResponse;
-import com.jackalcode.ecommerceapi.dtos.responses.OrderResponse;
-import com.jackalcode.ecommerceapi.services.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

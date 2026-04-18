@@ -1,4 +1,4 @@
-package com.jackalcode.ecommerceapi.entities;
+package com.jackalcode.ecommerceapi.order;
 
 import com.jackalcode.ecommerceapi.product.Product;
 import jakarta.persistence.*;

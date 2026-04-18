@@ -1,4 +1,4 @@
-package com.jackalcode.ecommerceapi.entities;
+package com.jackalcode.ecommerceapi.order;
 
 public enum OrderStatus {
     PENDING,

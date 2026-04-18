@@ -1,6 +1,6 @@
 package com.jackalcode.ecommerceapi.customer;
 
-import com.jackalcode.ecommerceapi.entities.Order;
+import com.jackalcode.ecommerceapi.order.Order;
 import com.jackalcode.ecommerceapi.entities.Role;
 import jakarta.persistence.*;
 import lombok.*;

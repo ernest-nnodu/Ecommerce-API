@@ -1,7 +1,5 @@
-package com.jackalcode.ecommerceapi.mappers;
+package com.jackalcode.ecommerceapi.order;
 
-import com.jackalcode.ecommerceapi.dtos.responses.OrderResponse;
-import com.jackalcode.ecommerceapi.entities.Order;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
