@@ -1,8 +1,8 @@
 package com.jackalcode.ecommerceapi.services.impl;
 
-import com.jackalcode.ecommerceapi.entities.Customer;
+import com.jackalcode.ecommerceapi.customer.Customer;
 import com.jackalcode.ecommerceapi.exceptions.CustomerNotFoundException;
-import com.jackalcode.ecommerceapi.repositories.CustomerRepository;
+import com.jackalcode.ecommerceapi.customer.CustomerRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;

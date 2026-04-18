@@ -1,9 +1,5 @@
-package com.jackalcode.ecommerceapi.controllers;
+package com.jackalcode.ecommerceapi.customer;
 
-import com.jackalcode.ecommerceapi.dtos.requests.RegisterCustomerRequest;
-import com.jackalcode.ecommerceapi.dtos.requests.UpdateCustomerRequest;
-import com.jackalcode.ecommerceapi.dtos.responses.CustomerResponse;
-import com.jackalcode.ecommerceapi.services.CustomerService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

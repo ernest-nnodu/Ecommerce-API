@@ -1,8 +1,4 @@
-package com.jackalcode.ecommerceapi.services;
-
-import com.jackalcode.ecommerceapi.dtos.requests.RegisterCustomerRequest;
-import com.jackalcode.ecommerceapi.dtos.requests.UpdateCustomerRequest;
-import com.jackalcode.ecommerceapi.dtos.responses.CustomerResponse;
+package com.jackalcode.ecommerceapi.customer;
 
 import java.util.List;
 

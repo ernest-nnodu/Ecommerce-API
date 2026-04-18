@@ -1,4 +1,4 @@
-package com.jackalcode.ecommerceapi.dtos.responses;
+package com.jackalcode.ecommerceapi.customer;
 
 public record CustomerResponse(
         long id,

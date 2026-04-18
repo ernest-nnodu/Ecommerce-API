@@ -1,9 +1,5 @@
-package com.jackalcode.ecommerceapi.mappers;
+package com.jackalcode.ecommerceapi.customer;
 
-import com.jackalcode.ecommerceapi.dtos.requests.RegisterCustomerRequest;
-import com.jackalcode.ecommerceapi.dtos.requests.UpdateCustomerRequest;
-import com.jackalcode.ecommerceapi.dtos.responses.CustomerResponse;
-import com.jackalcode.ecommerceapi.entities.Customer;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")

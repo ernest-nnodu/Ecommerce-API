@@ -1,6 +1,6 @@
 package com.jackalcode.ecommerceapi.jwt;
 
-import com.jackalcode.ecommerceapi.entities.Customer;
+import com.jackalcode.ecommerceapi.customer.Customer;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

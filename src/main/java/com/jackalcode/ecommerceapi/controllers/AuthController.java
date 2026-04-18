@@ -2,11 +2,11 @@ package com.jackalcode.ecommerceapi.controllers;
 
 import com.jackalcode.ecommerceapi.jwt.JwtConfig;
 import com.jackalcode.ecommerceapi.dtos.requests.LoginRequest;
-import com.jackalcode.ecommerceapi.dtos.responses.CustomerResponse;
+import com.jackalcode.ecommerceapi.customer.CustomerResponse;
 import com.jackalcode.ecommerceapi.dtos.responses.JwtResponse;
 import com.jackalcode.ecommerceapi.jwt.JwtService;
-import com.jackalcode.ecommerceapi.repositories.CustomerRepository;
-import com.jackalcode.ecommerceapi.services.CustomerService;
+import com.jackalcode.ecommerceapi.customer.CustomerRepository;
+import com.jackalcode.ecommerceapi.customer.CustomerService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;

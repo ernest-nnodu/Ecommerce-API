@@ -2,12 +2,12 @@ package com.jackalcode.ecommerceapi.controllers;
 
 import com.jackalcode.ecommerceapi.dtos.requests.CategoryRequest;
 import com.jackalcode.ecommerceapi.dtos.requests.ProductRequest;
-import com.jackalcode.ecommerceapi.dtos.responses.CustomerResponse;
+import com.jackalcode.ecommerceapi.customer.CustomerResponse;
 import com.jackalcode.ecommerceapi.dtos.responses.OrderResponse;
 import com.jackalcode.ecommerceapi.dtos.responses.ProductResponse;
 import com.jackalcode.ecommerceapi.entities.Category;
 import com.jackalcode.ecommerceapi.services.CategoryService;
-import com.jackalcode.ecommerceapi.services.CustomerService;
+import com.jackalcode.ecommerceapi.customer.CustomerService;
 import com.jackalcode.ecommerceapi.services.OrderService;
 import com.jackalcode.ecommerceapi.services.ProductService;
 import jakarta.validation.Valid;
