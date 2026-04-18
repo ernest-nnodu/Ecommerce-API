@@ -1,4 +1,4 @@
-package com.jackalcode.ecommerceapi.dtos.responses;
+package com.jackalcode.ecommerceapi.payment;
 
 public enum PaymentStatus {
     SUCCESS,

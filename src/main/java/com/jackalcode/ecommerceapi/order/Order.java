@@ -1,7 +1,7 @@
 package com.jackalcode.ecommerceapi.order;
 
 import com.jackalcode.ecommerceapi.customer.Customer;
-import com.jackalcode.ecommerceapi.entities.Payment;
+import com.jackalcode.ecommerceapi.payment.Payment;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

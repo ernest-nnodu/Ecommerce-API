@@ -2,12 +2,12 @@ package com.jackalcode.ecommerceapi.order;
 
 import com.jackalcode.ecommerceapi.cart.Cart;
 import com.jackalcode.ecommerceapi.cart.CartItem;
-import com.jackalcode.ecommerceapi.dtos.responses.PaymentResponse;
-import com.jackalcode.ecommerceapi.dtos.responses.PaymentStatus;
+import com.jackalcode.ecommerceapi.payment.PaymentResponse;
+import com.jackalcode.ecommerceapi.payment.PaymentStatus;
 import com.jackalcode.ecommerceapi.exceptions.*;
 import com.jackalcode.ecommerceapi.cart.CartRepository;
 import com.jackalcode.ecommerceapi.security.Role;
-import com.jackalcode.ecommerceapi.services.PaymentService;
+import com.jackalcode.ecommerceapi.payment.PaymentService;
 import com.jackalcode.ecommerceapi.security.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

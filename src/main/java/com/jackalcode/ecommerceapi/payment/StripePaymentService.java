@@ -1,12 +1,9 @@
-package com.jackalcode.ecommerceapi.services.impl;
+package com.jackalcode.ecommerceapi.payment;
 
 import com.jackalcode.ecommerceapi.order.WebhookRequest;
-import com.jackalcode.ecommerceapi.dtos.responses.PaymentResponse;
-import com.jackalcode.ecommerceapi.dtos.responses.PaymentStatus;
 import com.jackalcode.ecommerceapi.order.Order;
 import com.jackalcode.ecommerceapi.order.OrderItem;
 import com.jackalcode.ecommerceapi.order.CheckoutSession;
-import com.jackalcode.ecommerceapi.services.PaymentService;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;

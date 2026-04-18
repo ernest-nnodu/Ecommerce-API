@@ -1,4 +1,4 @@
-package com.jackalcode.ecommerceapi.configs;
+package com.jackalcode.ecommerceapi.payment;
 
 import com.stripe.Stripe;
 import jakarta.annotation.PostConstruct;

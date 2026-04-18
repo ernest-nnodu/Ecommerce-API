@@ -2,7 +2,7 @@ package com.jackalcode.ecommerceapi.security;
 
 import com.jackalcode.ecommerceapi.security.jwt.JwtConfig;
 import com.jackalcode.ecommerceapi.customer.CustomerResponse;
-import com.jackalcode.ecommerceapi.dtos.responses.JwtResponse;
+import com.jackalcode.ecommerceapi.security.jwt.JwtResponse;
 import com.jackalcode.ecommerceapi.security.jwt.JwtService;
 import com.jackalcode.ecommerceapi.customer.CustomerRepository;
 import com.jackalcode.ecommerceapi.customer.CustomerService;
