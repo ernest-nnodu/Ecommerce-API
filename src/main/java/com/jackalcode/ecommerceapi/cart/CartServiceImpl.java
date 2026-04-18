@@ -1,17 +1,11 @@
-package com.jackalcode.ecommerceapi.services.impl;
+package com.jackalcode.ecommerceapi.cart;
 
-import com.jackalcode.ecommerceapi.dtos.requests.AddToCartRequest;
-import com.jackalcode.ecommerceapi.dtos.requests.UpdateCartRequest;
-import com.jackalcode.ecommerceapi.dtos.responses.CartItemResponse;
-import com.jackalcode.ecommerceapi.dtos.responses.CartResponse;
-import com.jackalcode.ecommerceapi.entities.CartItem;
+import com.jackalcode.ecommerceapi.category.CartResponse;
 import com.jackalcode.ecommerceapi.product.Product;
 import com.jackalcode.ecommerceapi.exceptions.ProductNotFoundException;
 import com.jackalcode.ecommerceapi.exceptions.ProductNotInCartException;
-import com.jackalcode.ecommerceapi.mappers.CartMapper;
-import com.jackalcode.ecommerceapi.repositories.CartRepository;
 import com.jackalcode.ecommerceapi.product.ProductRepository;
-import com.jackalcode.ecommerceapi.services.CartService;
+import com.jackalcode.ecommerceapi.services.impl.AuthenticationService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

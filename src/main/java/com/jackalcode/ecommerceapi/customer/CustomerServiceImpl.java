@@ -1,10 +1,10 @@
 package com.jackalcode.ecommerceapi.customer;
 
-import com.jackalcode.ecommerceapi.entities.Cart;
+import com.jackalcode.ecommerceapi.cart.Cart;
 import com.jackalcode.ecommerceapi.entities.Role;
 import com.jackalcode.ecommerceapi.exceptions.CustomerAlreadyExistException;
 import com.jackalcode.ecommerceapi.exceptions.CustomerNotFoundException;
-import com.jackalcode.ecommerceapi.repositories.CartRepository;
+import com.jackalcode.ecommerceapi.cart.CartRepository;
 import com.jackalcode.ecommerceapi.services.impl.AuthenticationService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;

@@ -1,10 +1,11 @@
 package com.jackalcode.ecommerceapi.configs;
 
+import com.jackalcode.ecommerceapi.cart.Cart;
 import com.jackalcode.ecommerceapi.category.Category;
 import com.jackalcode.ecommerceapi.customer.Customer;
 import com.jackalcode.ecommerceapi.entities.*;
 import com.jackalcode.ecommerceapi.product.Product;
-import com.jackalcode.ecommerceapi.repositories.CartRepository;
+import com.jackalcode.ecommerceapi.cart.CartRepository;
 import com.jackalcode.ecommerceapi.category.CategoryRepository;
 import com.jackalcode.ecommerceapi.customer.CustomerRepository;
 import com.jackalcode.ecommerceapi.product.ProductRepository;

@@ -1,6 +1,6 @@
-package com.jackalcode.ecommerceapi.dtos.responses;
+package com.jackalcode.ecommerceapi.category;
 
-import org.w3c.dom.stylesheets.LinkStyle;
+import com.jackalcode.ecommerceapi.cart.CartItemResponse;
 
 import java.math.BigDecimal;
 import java.util.List;

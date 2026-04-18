@@ -1,10 +1,6 @@
-package com.jackalcode.ecommerceapi.controllers;
+package com.jackalcode.ecommerceapi.cart;
 
-import com.jackalcode.ecommerceapi.dtos.requests.AddToCartRequest;
-import com.jackalcode.ecommerceapi.dtos.requests.UpdateCartRequest;
-import com.jackalcode.ecommerceapi.dtos.responses.CartItemResponse;
-import com.jackalcode.ecommerceapi.dtos.responses.CartResponse;
-import com.jackalcode.ecommerceapi.services.CartService;
+import com.jackalcode.ecommerceapi.category.CartResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
