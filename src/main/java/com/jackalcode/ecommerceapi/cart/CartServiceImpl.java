@@ -5,7 +5,7 @@ import com.jackalcode.ecommerceapi.product.Product;
 import com.jackalcode.ecommerceapi.exceptions.ProductNotFoundException;
 import com.jackalcode.ecommerceapi.exceptions.ProductNotInCartException;
 import com.jackalcode.ecommerceapi.product.ProductRepository;
-import com.jackalcode.ecommerceapi.services.impl.AuthenticationService;
+import com.jackalcode.ecommerceapi.security.AuthenticationService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

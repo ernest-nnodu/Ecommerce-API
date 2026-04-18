@@ -1,4 +1,4 @@
-package com.jackalcode.ecommerceapi.controllers;
+package com.jackalcode.ecommerceapi.security;
 
 import com.jackalcode.ecommerceapi.category.CategoryRequest;
 import com.jackalcode.ecommerceapi.product.ProductRequest;

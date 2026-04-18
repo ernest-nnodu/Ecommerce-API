@@ -1,6 +1,6 @@
-package com.jackalcode.ecommerceapi.jwt;
+package com.jackalcode.ecommerceapi.security.jwt;
 
-import com.jackalcode.ecommerceapi.entities.Role;
+import com.jackalcode.ecommerceapi.security.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 

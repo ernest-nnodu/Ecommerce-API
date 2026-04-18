@@ -1,7 +1,5 @@
 package com.jackalcode.ecommerceapi.order;
 
-import com.jackalcode.ecommerceapi.dtos.requests.WebhookRequest;
-
 import java.util.List;
 
 public interface OrderService {

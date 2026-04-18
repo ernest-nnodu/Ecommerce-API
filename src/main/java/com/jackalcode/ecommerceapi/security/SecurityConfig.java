@@ -1,6 +1,6 @@
-package com.jackalcode.ecommerceapi.configs;
+package com.jackalcode.ecommerceapi.security;
 
-import com.jackalcode.ecommerceapi.jwt.JwtAuthenticationFilter;
+import com.jackalcode.ecommerceapi.security.jwt.JwtAuthenticationFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

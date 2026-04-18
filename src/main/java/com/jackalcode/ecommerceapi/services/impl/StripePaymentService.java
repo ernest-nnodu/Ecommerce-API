@@ -1,6 +1,6 @@
 package com.jackalcode.ecommerceapi.services.impl;
 
-import com.jackalcode.ecommerceapi.dtos.requests.WebhookRequest;
+import com.jackalcode.ecommerceapi.order.WebhookRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.PaymentResponse;
 import com.jackalcode.ecommerceapi.dtos.responses.PaymentStatus;
 import com.jackalcode.ecommerceapi.order.Order;

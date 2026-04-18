@@ -1,4 +1,4 @@
-package com.jackalcode.ecommerceapi.services.impl;
+package com.jackalcode.ecommerceapi.security;
 
 import com.jackalcode.ecommerceapi.customer.Customer;
 import com.jackalcode.ecommerceapi.exceptions.CustomerNotFoundException;

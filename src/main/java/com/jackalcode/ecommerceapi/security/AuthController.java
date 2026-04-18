@@ -1,10 +1,9 @@
-package com.jackalcode.ecommerceapi.controllers;
+package com.jackalcode.ecommerceapi.security;
 
-import com.jackalcode.ecommerceapi.jwt.JwtConfig;
-import com.jackalcode.ecommerceapi.dtos.requests.LoginRequest;
+import com.jackalcode.ecommerceapi.security.jwt.JwtConfig;
 import com.jackalcode.ecommerceapi.customer.CustomerResponse;
 import com.jackalcode.ecommerceapi.dtos.responses.JwtResponse;
-import com.jackalcode.ecommerceapi.jwt.JwtService;
+import com.jackalcode.ecommerceapi.security.jwt.JwtService;
 import com.jackalcode.ecommerceapi.customer.CustomerRepository;
 import com.jackalcode.ecommerceapi.customer.CustomerService;
 import jakarta.servlet.http.Cookie;

@@ -1,6 +1,5 @@
 package com.jackalcode.ecommerceapi.order;
 
-import com.jackalcode.ecommerceapi.dtos.requests.WebhookRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

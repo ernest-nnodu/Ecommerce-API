@@ -1,4 +1,4 @@
-package com.jackalcode.ecommerceapi.jwt;
+package com.jackalcode.ecommerceapi.security.jwt;
 
 import com.jackalcode.ecommerceapi.customer.Customer;
 import io.jsonwebtoken.Claims;
