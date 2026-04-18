@@ -1,15 +1,15 @@
 package com.jackalcode.ecommerceapi.controllers;
 
 import com.jackalcode.ecommerceapi.category.CategoryRequest;
-import com.jackalcode.ecommerceapi.dtos.requests.ProductRequest;
+import com.jackalcode.ecommerceapi.product.ProductRequest;
 import com.jackalcode.ecommerceapi.customer.CustomerResponse;
 import com.jackalcode.ecommerceapi.dtos.responses.OrderResponse;
-import com.jackalcode.ecommerceapi.dtos.responses.ProductResponse;
+import com.jackalcode.ecommerceapi.product.ProductResponse;
 import com.jackalcode.ecommerceapi.category.Category;
 import com.jackalcode.ecommerceapi.category.CategoryService;
 import com.jackalcode.ecommerceapi.customer.CustomerService;
 import com.jackalcode.ecommerceapi.services.OrderService;
-import com.jackalcode.ecommerceapi.services.ProductService;
+import com.jackalcode.ecommerceapi.product.ProductService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

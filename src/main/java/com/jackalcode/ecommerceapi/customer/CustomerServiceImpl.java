@@ -1,17 +1,11 @@
-package com.jackalcode.ecommerceapi.services.impl;
+package com.jackalcode.ecommerceapi.customer;
 
-import com.jackalcode.ecommerceapi.customer.RegisterCustomerRequest;
-import com.jackalcode.ecommerceapi.customer.UpdateCustomerRequest;
-import com.jackalcode.ecommerceapi.customer.CustomerResponse;
 import com.jackalcode.ecommerceapi.entities.Cart;
-import com.jackalcode.ecommerceapi.customer.Customer;
 import com.jackalcode.ecommerceapi.entities.Role;
 import com.jackalcode.ecommerceapi.exceptions.CustomerAlreadyExistException;
 import com.jackalcode.ecommerceapi.exceptions.CustomerNotFoundException;
-import com.jackalcode.ecommerceapi.customer.CustomerMapper;
 import com.jackalcode.ecommerceapi.repositories.CartRepository;
-import com.jackalcode.ecommerceapi.customer.CustomerRepository;
-import com.jackalcode.ecommerceapi.customer.CustomerService;
+import com.jackalcode.ecommerceapi.services.impl.AuthenticationService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

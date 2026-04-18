@@ -1,7 +1,5 @@
-package com.jackalcode.ecommerceapi.controllers;
+package com.jackalcode.ecommerceapi.product;
 
-import com.jackalcode.ecommerceapi.dtos.responses.ProductResponse;
-import com.jackalcode.ecommerceapi.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,7 +1,4 @@
-package com.jackalcode.ecommerceapi.services;
-
-import com.jackalcode.ecommerceapi.dtos.requests.ProductRequest;
-import com.jackalcode.ecommerceapi.dtos.responses.ProductResponse;
+package com.jackalcode.ecommerceapi.product;
 
 import java.util.List;
 

@@ -1,5 +1,6 @@
 package com.jackalcode.ecommerceapi.entities;
 
+import com.jackalcode.ecommerceapi.product.Product;
 import jakarta.persistence.*;
 import lombok.*;
 

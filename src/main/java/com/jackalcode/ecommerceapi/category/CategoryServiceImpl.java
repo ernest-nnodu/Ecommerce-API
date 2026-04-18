@@ -1,12 +1,7 @@
-package com.jackalcode.ecommerceapi.services.impl;
+package com.jackalcode.ecommerceapi.category;
 
-import com.jackalcode.ecommerceapi.category.CategoryRequest;
-import com.jackalcode.ecommerceapi.category.Category;
 import com.jackalcode.ecommerceapi.exceptions.CategoryAlreadyExistsException;
 import com.jackalcode.ecommerceapi.exceptions.CategoryNotFoundException;
-import com.jackalcode.ecommerceapi.category.CategoryMapper;
-import com.jackalcode.ecommerceapi.category.CategoryRepository;
-import com.jackalcode.ecommerceapi.category.CategoryService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

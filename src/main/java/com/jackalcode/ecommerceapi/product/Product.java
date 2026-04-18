@@ -1,4 +1,4 @@
-package com.jackalcode.ecommerceapi.entities;
+package com.jackalcode.ecommerceapi.product;
 
 import com.jackalcode.ecommerceapi.category.Category;
 import jakarta.persistence.*;
