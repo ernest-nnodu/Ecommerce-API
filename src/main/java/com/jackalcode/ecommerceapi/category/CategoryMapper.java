@@ -1,7 +1,5 @@
-package com.jackalcode.ecommerceapi.mappers;
+package com.jackalcode.ecommerceapi.category;
 
-import com.jackalcode.ecommerceapi.dtos.requests.CategoryRequest;
-import com.jackalcode.ecommerceapi.entities.Category;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 

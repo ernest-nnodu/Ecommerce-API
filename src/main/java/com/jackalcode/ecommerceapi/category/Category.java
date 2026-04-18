@@ -1,11 +1,9 @@
-package com.jackalcode.ecommerceapi.entities;
+package com.jackalcode.ecommerceapi.category;
 
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @Table(name = "categories")

@@ -1,7 +1,4 @@
-package com.jackalcode.ecommerceapi.services;
-
-import com.jackalcode.ecommerceapi.dtos.requests.CategoryRequest;
-import com.jackalcode.ecommerceapi.entities.Category;
+package com.jackalcode.ecommerceapi.category;
 
 import java.util.List;
 

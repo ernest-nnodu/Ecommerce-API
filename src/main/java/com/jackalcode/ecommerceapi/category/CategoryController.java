@@ -1,7 +1,5 @@
-package com.jackalcode.ecommerceapi.controllers;
+package com.jackalcode.ecommerceapi.category;
 
-import com.jackalcode.ecommerceapi.entities.Category;
-import com.jackalcode.ecommerceapi.services.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

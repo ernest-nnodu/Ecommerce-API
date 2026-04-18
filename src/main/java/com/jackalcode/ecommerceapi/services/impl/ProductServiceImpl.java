@@ -2,13 +2,13 @@ package com.jackalcode.ecommerceapi.services.impl;
 
 import com.jackalcode.ecommerceapi.dtos.requests.ProductRequest;
 import com.jackalcode.ecommerceapi.dtos.responses.ProductResponse;
-import com.jackalcode.ecommerceapi.entities.Category;
+import com.jackalcode.ecommerceapi.category.Category;
 import com.jackalcode.ecommerceapi.entities.Product;
 import com.jackalcode.ecommerceapi.exceptions.CategoryNotFoundException;
 import com.jackalcode.ecommerceapi.exceptions.ProductAlreadyExistException;
 import com.jackalcode.ecommerceapi.exceptions.ProductNotFoundException;
 import com.jackalcode.ecommerceapi.mappers.ProductMapper;
-import com.jackalcode.ecommerceapi.repositories.CategoryRepository;
+import com.jackalcode.ecommerceapi.category.CategoryRepository;
 import com.jackalcode.ecommerceapi.repositories.ProductRepository;
 import com.jackalcode.ecommerceapi.services.ProductService;
 import jakarta.transaction.Transactional;
