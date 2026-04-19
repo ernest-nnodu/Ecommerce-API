@@ -1,4 +1,4 @@
-package com.jackalcode.ecommerceapi.configs;
+package com.jackalcode.ecommerceapi.common;
 
 import com.jackalcode.ecommerceapi.cart.Cart;
 import com.jackalcode.ecommerceapi.category.Category;

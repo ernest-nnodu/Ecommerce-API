@@ -2,12 +2,10 @@ package com.jackalcode.ecommerceapi.order;
 
 import com.jackalcode.ecommerceapi.cart.Cart;
 import com.jackalcode.ecommerceapi.cart.CartItem;
-import com.jackalcode.ecommerceapi.payment.PaymentResponse;
-import com.jackalcode.ecommerceapi.payment.PaymentStatus;
+import com.jackalcode.ecommerceapi.payment.*;
 import com.jackalcode.ecommerceapi.exceptions.*;
 import com.jackalcode.ecommerceapi.cart.CartRepository;
 import com.jackalcode.ecommerceapi.security.Role;
-import com.jackalcode.ecommerceapi.payment.PaymentService;
 import com.jackalcode.ecommerceapi.security.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +24,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final AuthenticationService authenticationService;
     private final PaymentService paymentService;
+    private final PaymentRepository paymentRepository;
 
     @Transactional
     @Override
@@ -50,7 +49,6 @@ public class OrderServiceImpl implements OrderService {
 
         //Generate order from the cart and persist to database
         var order = generateOrder(cart);
-        order.getOrderItems().forEach(System.out::println);
         orderRepository.save(order);
 
         //Create checkout session
@@ -83,6 +81,13 @@ public class OrderServiceImpl implements OrderService {
                 order.setStatus(OrderStatus.FAILED);
             }
 
+            Payment payment = new Payment();
+            payment.setAmount(order.getTotalAmount());
+            payment.setDate(Instant.now());
+            payment.setStatus(paymentResponse.status());
+            payment.setOrder(order);
+
+            paymentRepository.save(payment);
             orderRepository.save(order);
         }
     }

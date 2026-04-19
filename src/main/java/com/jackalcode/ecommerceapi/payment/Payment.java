@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -19,7 +20,10 @@ public class Payment {
     private Long id;
 
     @Column(name = "amount")
-    private Double amount;
+    private BigDecimal amount;
+
+    @Column(name = "status")
+    PaymentStatus status;
 
     @Column(name = "date")
     private Instant date;
