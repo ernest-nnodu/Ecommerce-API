@@ -8,8 +8,8 @@ spring:
     jpa:
         show-sql: true
     jwt:
-      secret: UpWZaX4+FRlVrCwRZhUrGOWD3ryZmwhhxcqK2iecy78=
-      accessTokenExpiration: 7_200_000 #5mins
+      secret: ${JWT_SECRET}
+      accessTokenExpiration: 7_200_000 #2hrs
       refreshTokenExpiration: 604_800_000 #7days
 management:
   endpoints:
@@ -21,3 +21,7 @@ management:
         show-components: never
         probes:
           enabled: true
+stripe:
+  secret: ${STRIPE_SECRET}
+  webhookSecret: ${STRIPE_WEBHOOK_SECRET}
+websiteUrl: http://localhost:4242

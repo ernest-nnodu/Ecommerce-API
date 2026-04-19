@@ -113,4 +113,18 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+
+    @ExceptionHandler(CheckoutException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiError handleCheckoutException(CheckoutException ex, HttpServletRequest request) {
+
+        return new ApiError(ErrorCode.CHECKOUT_UNSUCCESSFUL, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiError handleException(Exception ex, HttpServletRequest request) {
+
+        return new ApiError(ErrorCode.EXCEPTION, ex.getMessage(), request.getRequestURI());
+    }
 }
