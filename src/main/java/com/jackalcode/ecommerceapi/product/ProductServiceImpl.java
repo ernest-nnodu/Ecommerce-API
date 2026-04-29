@@ -7,6 +7,7 @@ import com.jackalcode.ecommerceapi.exceptions.ProductNotFoundException;
 import com.jackalcode.ecommerceapi.category.CategoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -75,6 +76,22 @@ public class ProductServiceImpl implements ProductService {
 
         Product existingProduct = getProductEntity(id);
         productRepository.delete(existingProduct);
+    }
+
+    @Override
+    public List<ProductResponse> searchProducts(ProductFilter productFilter) {
+
+        var specification = Specification.where(
+                ProductSpecifications.hasName(productFilter.name())
+                        .and(ProductSpecifications.hasMinPrice(productFilter.minPrice()))
+                        .and(ProductSpecifications.hasMaxPrice(productFilter.maxPrice()))
+                        .and(ProductSpecifications.hasCategoryId(productFilter.categoryId()))
+        );
+
+        return productRepository.findAll(specification)
+                .stream()
+                .map(productMapper::toProductResponse)
+                .toList();
     }
 
     private Category getCategory(Long categoryId) {

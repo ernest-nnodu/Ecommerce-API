@@ -23,4 +23,10 @@ public class ProductController {
     public ResponseEntity<ProductResponse> getProduct(@PathVariable(name = "id") Long productId) {
         return ResponseEntity.ok(productService.getProduct(productId));
     }
+
+    @GetMapping(path = "/search")
+    public ResponseEntity<List<ProductResponse>> searchProducts(@RequestBody ProductFilter productFilter) {
+
+        return ResponseEntity.ok(productService.searchProducts(productFilter));
+    }
 }
