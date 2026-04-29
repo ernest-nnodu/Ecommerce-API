@@ -208,3 +208,24 @@ The goal of this project is to help you understand how to build a logic-heavy ap
 - System validates input
 - System updates inventory
 - System returns updated product
+
+### 🔵 Use Case 11: Login User
+**Actor: User**
+
+**Main Flow**
+
+- User submits email and password
+- System validates input
+- System retrieves user by email
+- System verifies password (hashed comparison)
+- System generates JWT token
+- System returns token to user
+
+***Post-Condition***
+- User is authenticated
+- Token is used for subsequent requests
+
+***Edge Cases***
+- User not found
+- Invalid password
+- Missing credentials
