@@ -3,6 +3,7 @@ package com.jackalcode.ecommerceapi.customer;
 import com.jackalcode.ecommerceapi.cart.Cart;
 import com.jackalcode.ecommerceapi.cart.CartRepository;
 import com.jackalcode.ecommerceapi.exceptions.CustomerAlreadyExistException;
+import com.jackalcode.ecommerceapi.exceptions.CustomerNotFoundException;
 import com.jackalcode.ecommerceapi.security.AuthenticationService;
 import com.jackalcode.ecommerceapi.security.Role;
 import org.junit.jupiter.api.DisplayName;
@@ -148,6 +149,47 @@ public class CustomerServiceTest {
 
         verify(customerRepository).findAll();
         verify(customerMapper, never()).toCustomerResponse(any());
+    }
+
+    @Test
+    @DisplayName("getCustomer: returns current authenticated customer response")
+    void getCustomer_returnsCurrentAuthenticatedCustomer() {
+
+        Customer current = createCustomerEntity(1L, "Alice", "Walker",
+                "alice.walker@mail.com");
+        CustomerResponse expected = createCustomerResponse(1L, "Alice", "Walker",
+                "alice.walker@mail.com");
+
+        when(authenticationService.getCurrentCustomer()).thenReturn(current);
+        when(customerMapper.toCustomerResponse(current)).thenReturn(expected);
+
+        CustomerResponse result = customerService.getCustomer();
+
+        // Assert
+        assertAll(
+                () -> assertNotNull(result),
+                () -> assertEquals(1L, result.id()),
+                () -> assertEquals("Alice", result.firstName()),
+                () -> assertEquals("Walker", result.lastName()),
+                () -> assertEquals("alice.walker@mail.com", result.email())
+        );
+
+        verify(authenticationService).getCurrentCustomer();
+        verify(customerMapper).toCustomerResponse(current);
+    }
+
+    @Test
+    @DisplayName("getCustomer: when no authenticated customer, throws CustomerNotFoundException")
+    void getCustomer_whenNoAuthenticatedCustomer_throwsException() {
+
+        when(authenticationService.getCurrentCustomer())
+                .thenThrow(new CustomerNotFoundException("Customer not found"));
+
+        assertThrows(CustomerNotFoundException.class,
+                () -> customerService.getCustomer());
+
+        verify(authenticationService).getCurrentCustomer();
+        verifyNoInteractions(customerMapper);
     }
 
     private Customer createCustomerEntity(Long id, String firstName, String lastName,
