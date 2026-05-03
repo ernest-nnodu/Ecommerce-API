@@ -2,9 +2,9 @@ package com.jackalcode.ecommerceapi.customer;
 
 import com.jackalcode.ecommerceapi.cart.Cart;
 import com.jackalcode.ecommerceapi.cart.CartRepository;
+import com.jackalcode.ecommerceapi.exceptions.CustomerAlreadyExistException;
 import com.jackalcode.ecommerceapi.security.AuthenticationService;
 import com.jackalcode.ecommerceapi.security.Role;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,10 +13,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class CustomerServiceTest {
@@ -69,15 +68,31 @@ public class CustomerServiceTest {
         CustomerResponse response = customerService.registerCustomer(request);
 
         assertAll(
-                () -> Assertions.assertNotNull(response),
-                () -> Assertions.assertEquals("John", response.firstName()),
-                () -> Assertions.assertEquals("Doe", response.lastName()),
-                () -> Assertions.assertEquals("john.doe@mail.com", response.email())
+                () -> assertNotNull(response),
+                () -> assertEquals("John", response.firstName()),
+                () -> assertEquals("Doe", response.lastName()),
+                () -> assertEquals("john.doe@mail.com", response.email())
         );
 
         verify(customerRepository).save(any(Customer.class));
         verify(cartRepository).save(any(Cart.class));
         verify(passwordEncoder).encode("Password123?");
+    }
+
+    @Test
+    void registerCustomer_withExistingEmail_throwsException() {
+        RegisterCustomerRequest request = new RegisterCustomerRequest(
+                "John", "Doe", "john.doe@mail.com", "Password123?");
+
+        when(customerRepository.existsByEmail(request.email())).thenReturn(true);
+
+        assertThrows(CustomerAlreadyExistException.class, () ->
+            customerService.registerCustomer(request)
+        );
+
+        verify(customerRepository).existsByEmail(request.email());
+        verifyNoInteractions(customerMapper, passwordEncoder, cartRepository);
+
     }
 
     private Customer createCustomerEntity() {
