@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -189,6 +190,47 @@ public class CustomerServiceTest {
                 () -> customerService.getCustomer());
 
         verify(authenticationService).getCurrentCustomer();
+        verifyNoInteractions(customerMapper);
+    }
+
+    @Test
+    @DisplayName("getCustomerById: returns mapped CustomerResponse when customer exists")
+    void getCustomerById_whenCustomerExists_returnsMappedResponse() {
+
+        Long customerId = 1L;
+        Customer customer = createCustomerEntity(customerId, "Tom", "Brown",
+                "tom.brown@mail.com");
+        CustomerResponse expected = createCustomerResponse(customerId, "Tom", "Brown",
+                "tom.brown@mail.com");
+
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
+        when(customerMapper.toCustomerResponse(customer)).thenReturn(expected);
+
+        CustomerResponse result = customerService.getCustomerById(customerId);
+
+        assertAll(
+                () -> assertNotNull(result),
+                () -> assertEquals(customerId, result.id()),
+                () -> assertEquals("Tom", result.firstName()),
+                () -> assertEquals("Brown", result.lastName()),
+                () -> assertEquals("tom.brown@mail.com", result.email())
+        );
+
+        verify(customerRepository).findById(customerId);
+        verify(customerMapper).toCustomerResponse(customer);
+    }
+
+    @Test
+    @DisplayName("getCustomerById: throws CustomerNotFoundException when customer does not exist")
+    void getCustomerById_whenCustomerNotFound_throwsException() {
+
+        Long missingId = 999L;
+        when(customerRepository.findById(missingId)).thenReturn(Optional.empty());
+
+        assertThrows(CustomerNotFoundException.class,
+                () -> customerService.getCustomerById(missingId));
+
+        verify(customerRepository).findById(missingId);
         verifyNoInteractions(customerMapper);
     }
 
