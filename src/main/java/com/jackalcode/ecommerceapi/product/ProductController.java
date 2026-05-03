@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -25,8 +26,12 @@ public class ProductController {
     }
 
     @GetMapping(path = "/search")
-    public ResponseEntity<List<ProductResponse>> searchProducts(@RequestBody ProductFilter productFilter) {
+    public ResponseEntity<List<ProductResponse>> searchProducts(@RequestParam(required = false) String name,
+                                                                @RequestParam(required = false) BigDecimal minPrice,
+                                                                @RequestParam(required = false) BigDecimal maxPrice,
+                                                                @RequestParam(required = false) Long categoryId) {
 
+        ProductFilter productFilter = new ProductFilter(name, minPrice, maxPrice, categoryId);
         return ResponseEntity.ok(productService.searchProducts(productFilter));
     }
 }
