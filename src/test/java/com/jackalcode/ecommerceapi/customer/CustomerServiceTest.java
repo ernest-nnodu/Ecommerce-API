@@ -13,6 +13,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -46,7 +48,8 @@ public class CustomerServiceTest {
         RegisterCustomerRequest request = new RegisterCustomerRequest(
                 "John", "Doe", "john.doe@mail.com", "Password123?");
 
-        Customer customer = createCustomerEntity();
+        Customer customer = createCustomerEntity(1L, "John", "Doe",
+                "john.doe@mail.com");
 
         CustomerResponse customerResponse = new CustomerResponse(
                 customer.getId(),
@@ -80,6 +83,8 @@ public class CustomerServiceTest {
     }
 
     @Test
+    @DisplayName("registerCustomer: when email already exists, " +
+            "throws CustomerAlreadyExistException")
     void registerCustomer_withExistingEmail_throwsException() {
         RegisterCustomerRequest request = new RegisterCustomerRequest(
                 "John", "Doe", "john.doe@mail.com", "Password123?");
@@ -95,16 +100,73 @@ public class CustomerServiceTest {
 
     }
 
-    private Customer createCustomerEntity() {
+    @Test
+    @DisplayName("getCustomers: returns list of mapped CustomerResponse objects")
+    void getCustomers_returnsMappedCustomerResponses() {
+
+        Customer c1 = createCustomerEntity(1L, "John", "Doe",
+                "john.doe@mail.com");
+
+        Customer c2 = createCustomerEntity(2L, "Jane", "Smith",
+                "jane.smith@mail.com");
+
+        CustomerResponse r1 = createCustomerResponse(
+                1L, "John", "Doe", "john.doe@mail.com");
+        CustomerResponse r2 = createCustomerResponse(
+                2L, "Jane", "Smith", "jane.smith@mail.com");
+
+        when(customerRepository.findAll()).thenReturn(List.of(c1, c2));
+        when(customerMapper.toCustomerResponse(c1)).thenReturn(r1);
+        when(customerMapper.toCustomerResponse(c2)).thenReturn(r2);
+
+        List<CustomerResponse> results = customerService.getCustomers();
+
+        assertAll(
+                () -> assertNotNull(results),
+                () -> assertEquals(2, results.size()),
+                () -> assertEquals("john.doe@mail.com", results.get(0).email()),
+                () -> assertEquals("jane.smith@mail.com", results.get(1).email())
+        );
+
+        verify(customerRepository).findAll();
+        verify(customerMapper).toCustomerResponse(c1);
+        verify(customerMapper).toCustomerResponse(c2);
+    }
+
+    @Test
+    @DisplayName("getCustomers: returns empty list when repository has no customers")
+    void getCustomers_returnsEmptyList_whenNoCustomers() {
+
+        when(customerRepository.findAll()).thenReturn(List.of());
+
+        List<CustomerResponse> results = customerService.getCustomers();
+
+        assertAll(
+                () -> assertNotNull(results),
+                () -> assertTrue(results.isEmpty(), "Expected empty customer list")
+        );
+
+        verify(customerRepository).findAll();
+        verify(customerMapper, never()).toCustomerResponse(any());
+    }
+
+    private Customer createCustomerEntity(Long id, String firstName, String lastName,
+                                          String email) {
         Customer customer = new Customer();
-        customer.setId(1L);
-        customer.setFirstName("John");
-        customer.setLastName("Doe");
-        customer.setEmail("john.doe@mail.com");
+        customer.setId(id);
+        customer.setFirstName(firstName);
+        customer.setLastName(lastName);
+        customer.setEmail(email);
         customer.setPassword("Password123?");
         customer.setRole(Role.USER);
-        return customer;
 
+        return customer;
+    }
+
+    private CustomerResponse createCustomerResponse(Long id, String firstName, String lastName,
+            String email) {
+
+        return new CustomerResponse(id, firstName, lastName, email);
     }
 }
 
