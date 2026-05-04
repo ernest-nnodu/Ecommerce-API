@@ -6,10 +6,11 @@ import com.jackalcode.ecommerceapi.exceptions.CustomerAlreadyExistException;
 import com.jackalcode.ecommerceapi.exceptions.CustomerNotFoundException;
 import com.jackalcode.ecommerceapi.security.AuthenticationService;
 import com.jackalcode.ecommerceapi.security.Role;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
+import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,8 +31,7 @@ public class CustomerServiceTest {
     @Mock
     CartRepository cartRepository;
 
-    @Mock
-    CustomerMapper customerMapper;
+    CustomerMapper customerMapper = Mappers.getMapper(CustomerMapper.class);
 
     @Mock
     PasswordEncoder passwordEncoder;
@@ -39,8 +39,18 @@ public class CustomerServiceTest {
     @Mock
     AuthenticationService authenticationService;
 
-    @InjectMocks
     CustomerServiceImpl customerService;
+
+    @BeforeEach
+    void setUp() {
+        customerService = new CustomerServiceImpl(
+                customerRepository,
+                cartRepository,
+                customerMapper, // real mapper
+                passwordEncoder,
+                authenticationService
+        );
+    }
 
     @Test
     @DisplayName("registerCustomer: given valid request, " +
@@ -53,22 +63,13 @@ public class CustomerServiceTest {
         Customer customer = createCustomerEntity(1L, "John", "Doe",
                 "john.doe@mail.com");
 
-        CustomerResponse customerResponse = new CustomerResponse(
-                customer.getId(),
-                customer.getFirstName(),
-                customer.getLastName(),
-                customer.getEmail()
-        );
-
         Cart cart = new Cart();
         cart.setCustomer(customer);
 
         when(customerRepository.existsByEmail(request.email())).thenReturn(false);
         when(passwordEncoder.encode(request.password())).thenReturn("hashedPassword");
-        when(customerMapper.toCustomer(request)).thenReturn(customer);
         when(customerRepository.save(any(Customer.class))).thenReturn(customer);
         when(cartRepository.save(any(Cart.class))).thenReturn(cart);
-        when(customerMapper.toCustomerResponse(customer)).thenReturn(customerResponse);
 
         CustomerResponse response = customerService.registerCustomer(request);
 
@@ -98,7 +99,7 @@ public class CustomerServiceTest {
         );
 
         verify(customerRepository).existsByEmail(request.email());
-        verifyNoInteractions(customerMapper, passwordEncoder, cartRepository);
+        verifyNoInteractions(passwordEncoder, cartRepository);
 
     }
 
@@ -112,14 +113,7 @@ public class CustomerServiceTest {
         Customer c2 = createCustomerEntity(2L, "Jane", "Smith",
                 "jane.smith@mail.com");
 
-        CustomerResponse r1 = createCustomerResponse(
-                1L, "John", "Doe", "john.doe@mail.com");
-        CustomerResponse r2 = createCustomerResponse(
-                2L, "Jane", "Smith", "jane.smith@mail.com");
-
         when(customerRepository.findAll()).thenReturn(List.of(c1, c2));
-        when(customerMapper.toCustomerResponse(c1)).thenReturn(r1);
-        when(customerMapper.toCustomerResponse(c2)).thenReturn(r2);
 
         List<CustomerResponse> results = customerService.getCustomers();
 
@@ -131,8 +125,6 @@ public class CustomerServiceTest {
         );
 
         verify(customerRepository).findAll();
-        verify(customerMapper).toCustomerResponse(c1);
-        verify(customerMapper).toCustomerResponse(c2);
     }
 
     @Test
@@ -149,7 +141,6 @@ public class CustomerServiceTest {
         );
 
         verify(customerRepository).findAll();
-        verify(customerMapper, never()).toCustomerResponse(any());
     }
 
     @Test
@@ -158,11 +149,8 @@ public class CustomerServiceTest {
 
         Customer current = createCustomerEntity(1L, "Alice", "Walker",
                 "alice.walker@mail.com");
-        CustomerResponse expected = createCustomerResponse(1L, "Alice", "Walker",
-                "alice.walker@mail.com");
 
         when(authenticationService.getCurrentCustomer()).thenReturn(current);
-        when(customerMapper.toCustomerResponse(current)).thenReturn(expected);
 
         CustomerResponse result = customerService.getCustomer();
 
@@ -176,7 +164,6 @@ public class CustomerServiceTest {
         );
 
         verify(authenticationService).getCurrentCustomer();
-        verify(customerMapper).toCustomerResponse(current);
     }
 
     @Test
@@ -190,7 +177,6 @@ public class CustomerServiceTest {
                 () -> customerService.getCustomer());
 
         verify(authenticationService).getCurrentCustomer();
-        verifyNoInteractions(customerMapper);
     }
 
     @Test
@@ -200,11 +186,8 @@ public class CustomerServiceTest {
         Long customerId = 1L;
         Customer customer = createCustomerEntity(customerId, "Tom", "Brown",
                 "tom.brown@mail.com");
-        CustomerResponse expected = createCustomerResponse(customerId, "Tom", "Brown",
-                "tom.brown@mail.com");
 
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
-        when(customerMapper.toCustomerResponse(customer)).thenReturn(expected);
 
         CustomerResponse result = customerService.getCustomerById(customerId);
 
@@ -217,7 +200,6 @@ public class CustomerServiceTest {
         );
 
         verify(customerRepository).findById(customerId);
-        verify(customerMapper).toCustomerResponse(customer);
     }
 
     @Test
@@ -231,7 +213,6 @@ public class CustomerServiceTest {
                 () -> customerService.getCustomerById(missingId));
 
         verify(customerRepository).findById(missingId);
-        verifyNoInteractions(customerMapper);
     }
 
     private Customer createCustomerEntity(Long id, String firstName, String lastName,
@@ -245,12 +226,6 @@ public class CustomerServiceTest {
         customer.setRole(Role.USER);
 
         return customer;
-    }
-
-    private CustomerResponse createCustomerResponse(Long id, String firstName, String lastName,
-            String email) {
-
-        return new CustomerResponse(id, firstName, lastName, email);
     }
 }
 
