@@ -1,6 +1,5 @@
 package com.jackalcode.ecommerceapi.cart;
 
-import com.jackalcode.ecommerceapi.category.CartResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

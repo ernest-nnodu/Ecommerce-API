@@ -1,7 +1,5 @@
 package com.jackalcode.ecommerceapi.cart;
 
-import com.jackalcode.ecommerceapi.category.CartResponse;
-
 public interface CartService {
 
     CartItemResponse addItemToCart(AddToCartRequest addToCartRequest);

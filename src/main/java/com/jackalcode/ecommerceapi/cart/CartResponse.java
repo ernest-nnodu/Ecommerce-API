@@ -1,6 +1,4 @@
-package com.jackalcode.ecommerceapi.category;
-
-import com.jackalcode.ecommerceapi.cart.CartItemResponse;
+package com.jackalcode.ecommerceapi.cart;
 
 import java.math.BigDecimal;
 import java.util.List;
