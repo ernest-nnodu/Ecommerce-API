@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -213,6 +214,71 @@ public class CustomerServiceTest {
                 () -> customerService.getCustomerById(missingId));
 
         verify(customerRepository).findById(missingId);
+    }
+
+    @Test
+    @DisplayName("updateCustomer: updates current customer when valid and returns updated customer")
+    void updateCustomer_withValidRequest_updatesAndReturnsCustomer() {
+
+        Customer current = createCustomerEntity(1L, "OldFirst", "OldLast",
+                "old.email@mail.com");
+        UpdateCustomerRequest updateRequest = new UpdateCustomerRequest("NewFirst",
+                "NewLast", "new.email@mail.com");
+
+        // authenticationService provides the current customer
+        when(authenticationService.getCurrentCustomer()).thenReturn(current);
+
+        // email check: new email does not exist in repo
+        when(customerRepository.existsByEmail(updateRequest.email())).thenReturn(false);
+
+        // simulate save returning the persisted entity with updated fields
+        when(customerRepository.save(any(Customer.class))).thenAnswer(
+                invocation -> invocation.getArgument(0));
+
+        CustomerResponse result = customerService.updateCustomer(updateRequest);
+
+        assertAll(
+                () -> assertNotNull(result),
+                () -> assertEquals(1L, result.id()),
+                () -> assertEquals("NewFirst", result.firstName()),
+                () -> assertEquals("NewLast", result.lastName()),
+                () -> assertEquals("new.email@mail.com", result.email())
+        );
+
+        // Verify interactions and that saved entity contains updated fields
+        verify(authenticationService).getCurrentCustomer();
+
+        ArgumentCaptor<Customer> captor = ArgumentCaptor.forClass(Customer.class);
+        verify(customerRepository).save(captor.capture());
+        Customer saved = captor.getValue();
+
+        assertAll(
+                () -> assertEquals("NewFirst", saved.getFirstName()),
+                () -> assertEquals("NewLast", saved.getLastName()),
+                () -> assertEquals("new.email@mail.com", saved.getEmail())
+        );
+    }
+
+    @Test
+    @DisplayName("updateCustomer: when requested email already exists, " +
+            "throws CustomerAlreadyExistException")
+    void updateCustomer_whenEmailExists_throwsException() {
+
+        Customer current = createCustomerEntity(1L, "OldFirst", "OldLast",
+                "old.email@mail.com");
+        UpdateCustomerRequest updateRequest = new UpdateCustomerRequest("NewFirst",
+                "NewLast", "existing.email@mail.com");
+
+        when(authenticationService.getCurrentCustomer()).thenReturn(current);
+
+        when(customerRepository.existsByEmail(updateRequest.email())).thenReturn(true);
+
+        assertThrows(CustomerAlreadyExistException.class,
+                () -> customerService.updateCustomer(updateRequest));
+
+        verify(authenticationService).getCurrentCustomer();
+        verify(customerRepository).existsByEmail(updateRequest.email());
+        verify(customerRepository, never()).save(any(Customer.class));
     }
 
     private Customer createCustomerEntity(Long id, String firstName, String lastName,
