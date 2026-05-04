@@ -29,9 +29,8 @@ public class CategoryServiceImpl implements CategoryService {
 
         //Create new category and save to database
         Category category = categoryMapper.toCategory(categoryRequest);
-        categoryRepository.save(category);
 
-        return category;
+        return categoryRepository.save(category);
     }
 
     @Override

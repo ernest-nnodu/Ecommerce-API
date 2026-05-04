@@ -1,6 +1,5 @@
 package com.jackalcode.ecommerceapi.cart;
 
-import com.jackalcode.ecommerceapi.category.CartResponse;
 import com.jackalcode.ecommerceapi.product.Product;
 import com.jackalcode.ecommerceapi.exceptions.ProductNotFoundException;
 import com.jackalcode.ecommerceapi.exceptions.ProductNotInCartException;

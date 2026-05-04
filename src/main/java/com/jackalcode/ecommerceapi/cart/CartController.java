@@ -1,6 +1,5 @@
 package com.jackalcode.ecommerceapi.cart;
 
-import com.jackalcode.ecommerceapi.category.CartResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
