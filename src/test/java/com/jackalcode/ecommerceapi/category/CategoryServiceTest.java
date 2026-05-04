@@ -1,5 +1,6 @@
 package com.jackalcode.ecommerceapi.category;
 
+import com.jackalcode.ecommerceapi.exceptions.CategoryAlreadyExistsException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,8 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class CategoryServiceTest {
@@ -67,5 +68,52 @@ public class CategoryServiceTest {
         );
 
         verify(categoryRepository).findAll();
+    }
+
+    @Test
+    @DisplayName("createCategory: saves and returns category when name does not already exist")
+    void createCategory_withValidDetails_savesAndReturnsCategory() {
+
+        CategoryRequest request = new CategoryRequest("Sports");
+
+        Category mapped = new Category();
+        mapped.setName("Sports");
+
+        Category saved = new Category();
+        saved.setId(1L);
+        saved.setName("Sports");
+
+        when(categoryRepository.existsByNameIgnoreCase("Sports")).thenReturn(false);
+        when(categoryMapper.toCategory(request)).thenReturn(mapped);
+        when(categoryRepository.save(any(Category.class))).thenReturn(saved);
+
+        Category result = categoryService.createCategory(request);
+        System.out.println(result.getId());
+
+        assertAll(
+                () -> assertNotNull(result),
+                () -> assertEquals(1L, result.getId()),
+                () -> assertEquals("Sports", result.getName())
+        );
+
+        verify(categoryRepository).existsByNameIgnoreCase("Sports");
+        verify(categoryMapper).toCategory(request);
+        verify(categoryRepository).save(any(Category.class));
+    }
+
+    @Test
+    @DisplayName("createCategory: throws CategoryAlreadyExistsException when category name already exists")
+    void createCategory_whenNameExists_throwsException() {
+
+        CategoryRequest request = new CategoryRequest("Electronics");
+
+        when(categoryRepository.existsByNameIgnoreCase("Electronics")).thenReturn(true);
+
+        assertThrows(CategoryAlreadyExistsException.class,
+                () -> categoryService.createCategory(request));
+
+        verify(categoryRepository).existsByNameIgnoreCase("Electronics");
+        verify(categoryMapper, never()).toCategory(any());
+        verify(categoryRepository, never()).save(any());
     }
 }
