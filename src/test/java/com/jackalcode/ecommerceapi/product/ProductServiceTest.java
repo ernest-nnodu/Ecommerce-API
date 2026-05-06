@@ -2,6 +2,7 @@ package com.jackalcode.ecommerceapi.product;
 
 import com.jackalcode.ecommerceapi.category.Category;
 import com.jackalcode.ecommerceapi.category.CategoryRepository;
+import com.jackalcode.ecommerceapi.exceptions.ProductNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -27,7 +29,7 @@ public class ProductServiceTest {
     @Mock
     private CategoryRepository categoryRepository;
 
-    private ProductMapper productMapper = Mappers.getMapper(ProductMapper.class);
+    private final ProductMapper productMapper = Mappers.getMapper(ProductMapper.class);
 
     @BeforeEach
     void setUp() {
@@ -72,7 +74,7 @@ public class ProductServiceTest {
 
     @Test
     @DisplayName("getProducts: returns empty list when no products available")
-    void getProducts_returnsEmptyList_whenNoProducts() {
+    void getProducts_whenNoProducts_returnsEmptyList() {
 
         when(productRepository.findAll()).thenReturn(List.of());
 
@@ -82,6 +84,45 @@ public class ProductServiceTest {
         assertTrue(results.isEmpty(), "Expected empty product list");
 
         verify(productRepository).findAll();
+    }
+
+    @Test
+    @DisplayName("getProduct: returns mapped ProductResponse when product exists")
+    void getProduct_whenProductExists_returnsMappedProductResponse() {
+
+        Long productId = 1L;
+        Category category = createCategory(10L, "Electronics");
+        Product product = createProductEntity(productId, "Phone", new BigDecimal("199.99"),
+                category, 10L);
+
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+
+        ProductResponse result = productService.getProduct(productId);
+
+        // Assert
+        assertAll(
+                () -> assertNotNull(result),
+                () -> assertEquals(productId, result.id()),
+                () -> assertEquals("Phone", result.name()),
+                () -> assertEquals(new BigDecimal("199.99"), result.price()),
+                () -> assertEquals(10L, result.categoryId()),
+                () -> assertEquals("Electronics", result.categoryName())
+        );
+
+        verify(productRepository).findById(productId);
+    }
+
+    @Test
+    @DisplayName("getProduct: throws ProductNotFoundException when product does not exist")
+    void getProduct_whenProductNotFound_throwsProductNotFoundException() {
+
+        Long missingId = 999L;
+        when(productRepository.findById(missingId)).thenReturn(Optional.empty());
+
+        assertThrows(ProductNotFoundException.class,
+                () -> productService.getProduct(missingId));
+
+        verify(productRepository).findById(missingId);
     }
 
     private Product createProductEntity(Long id, String name, BigDecimal price, Category category,
