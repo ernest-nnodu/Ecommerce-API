@@ -2,6 +2,8 @@ package com.jackalcode.ecommerceapi.product;
 
 import com.jackalcode.ecommerceapi.category.Category;
 import com.jackalcode.ecommerceapi.category.CategoryRepository;
+import com.jackalcode.ecommerceapi.exceptions.CategoryNotFoundException;
+import com.jackalcode.ecommerceapi.exceptions.ProductAlreadyExistException;
 import com.jackalcode.ecommerceapi.exceptions.ProductNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -123,6 +125,73 @@ public class ProductServiceTest {
                 () -> productService.getProduct(missingId));
 
         verify(productRepository).findById(missingId);
+    }
+
+    @Test
+    @DisplayName("createProduct: saves and returns ProductResponse when valid request")
+    void createProduct_withValidRequest_savesAndReturnsResponse() {
+
+        Category category = createCategory(10L, "Electronics");
+        ProductRequest request = new ProductRequest("Phone", new BigDecimal("199.99"),
+                10L, 10L);
+
+        when(productRepository.existsByNameIgnoreCase("Phone")).thenReturn(false);
+        when(categoryRepository.findById(10L)).thenReturn(Optional.of(category));
+
+        // simulate DB assigning id on save
+        when(productRepository.save(any(Product.class))).thenAnswer(invocation -> {
+            Product p = invocation.getArgument(0);
+            p.setId(1L);
+            return p;
+        });
+
+        ProductResponse response = productService.createProduct(request);
+
+        assertAll(
+                () -> assertNotNull(response),
+                () -> assertEquals(1L, response.id()),
+                () -> assertEquals("Phone", response.name()),
+                () -> assertEquals(new BigDecimal("199.99"), response.price()),
+                () -> assertEquals(10L, response.categoryId()),
+                () -> assertEquals("Electronics", response.categoryName())
+        );
+
+        verify(productRepository).existsByNameIgnoreCase("Phone");
+        verify(categoryRepository).findById(10L);
+        verify(productRepository).save(any(Product.class));
+    }
+
+    @Test
+    @DisplayName("createProduct: throws ProductAlreadyExistException when name already exists")
+    void createProduct_whenNameExists_throwsException() {
+
+        ProductRequest request = new ProductRequest("Phone", new BigDecimal("199.99"), 10L, 10L);
+
+        when(productRepository.existsByNameIgnoreCase("Phone")).thenReturn(true);
+
+        assertThrows(ProductAlreadyExistException.class,
+                () -> productService.createProduct(request));
+
+        verify(productRepository).existsByNameIgnoreCase("Phone");
+        verify(categoryRepository, never()).findById(anyLong());
+        verify(productRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("createProduct: throws CategoryNotFoundException when category does not exist")
+    void createProduct_whenCategoryNotFound_throwsException() {
+
+        ProductRequest request = new ProductRequest("Phone", new BigDecimal("199.99"), 10L, 999L);
+
+        when(productRepository.existsByNameIgnoreCase("Phone")).thenReturn(false);
+        when(categoryRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThrows(CategoryNotFoundException.class,
+                () -> productService.createProduct(request));
+
+        verify(productRepository).existsByNameIgnoreCase("Phone");
+        verify(categoryRepository).findById(999L);
+        verify(productRepository, never()).save(any());
     }
 
     private Product createProductEntity(Long id, String name, BigDecimal price, Category category,
