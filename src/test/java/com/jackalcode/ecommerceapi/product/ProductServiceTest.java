@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -290,6 +291,60 @@ public class ProductServiceTest {
         verify(productRepository).existsByNameIgnoreCase("NewPhone");
         verify(categoryRepository).findById(12345L);
         verify(productRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("searchProducts: returns mapped ProductResponse list when specification matches")
+    void searchProducts_returnsMappedProductResponses() {
+
+        Category category1 = createCategory(10L, "Electronics");
+        Product product1 = createProductEntity(1L, "Phone", new BigDecimal("199.99"),
+                category1, 10L);
+
+        Category category2 = createCategory(20L, "Books");
+        Product product2 = createProductEntity(2L, "Novel", new BigDecimal("9.99"),
+                category2, 20L);
+
+        ProductFilter filter = new ProductFilter("Phone", new BigDecimal("100"),
+                new BigDecimal("300"), 10L);
+
+        // Mock repository to return matching products regardless of the Specification instance
+        when(productRepository.findAll(any(Specification.class)))
+                .thenReturn(List.of(product1, product2));
+
+        List<ProductResponse> results = productService.searchProducts(filter);
+
+        assertAll(
+                () -> assertNotNull(results),
+                () -> assertEquals(2, results.size()),
+                () -> assertEquals(1L, results.get(0).id()),
+                () -> assertEquals("Phone", results.get(0).name()),
+                () -> assertEquals(new BigDecimal("199.99"), results.get(0).price()),
+                () -> assertEquals(10L, results.get(0).categoryId()),
+                () -> assertEquals("Electronics", results.get(0).categoryName()),
+                () -> assertEquals(2L, results.get(1).id()),
+                () -> assertEquals("Novel", results.get(1).name())
+        );
+
+        verify(productRepository).findAll(any(Specification.class));
+    }
+
+    @Test
+    @DisplayName("searchProducts: returns empty list when specification matches no products")
+    void searchProducts_whenNoMatches_returnsEmptyList() {
+
+        ProductFilter filter = new ProductFilter("NonExisting", null, null, null);
+
+        when(productRepository.findAll(any(Specification.class)))
+                .thenReturn(List.of());
+
+        List<ProductResponse> results = productService.searchProducts(filter);
+
+        assertNotNull(results);
+        assertTrue(results.isEmpty(), "Expected empty search result list");
+
+        verify(productRepository).findAll(any(Specification.class));
+        verifyNoMoreInteractions(productRepository);
     }
 
     private Product createProductEntity(Long id, String name, BigDecimal price, Category category,
