@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -138,7 +139,7 @@ public class CartServiceTest {
 
         var customer = getCustomer();
 
-        var cart = getCart(100L, customer);
+        var cart = getCart(customer);
 
         when(authenticationService.getCurrentCustomer()).thenReturn(customer);
         when(cartRepository.findByCustomerId(customer.getId())).thenReturn(cart);
@@ -268,9 +269,59 @@ public class CartServiceTest {
                 .build();
     }
 
-    private Cart getCart(Long id, Customer customer) {
+    @Test
+    @DisplayName("removeItemFromCart: removes existing item and saves updated cart")
+    void removeItemFromCart_whenItemExists_removesExistingItemAndSavesCart() {
+
+        var customer = getCustomer();
+        var cart = getCart(customer); // contains items for product ids 10 and 20
+
+        when(authenticationService.getCurrentCustomer()).thenReturn(customer);
+        when(cartRepository.findByCustomerId(customer.getId())).thenReturn(cart);
+        when(cartRepository.save(any(Cart.class))).thenAnswer(
+                invocation -> invocation.getArgument(0));
+
+        cartService.removeItemFromCart(10L);
+
+        // Assert - capture savedCart cart, and verify item removed
+        ArgumentCaptor<Cart> captor = ArgumentCaptor.forClass(Cart.class);
+        verify(cartRepository).save(captor.capture());
+        Cart savedCart = captor.getValue();
+
+        // The item with productId 10 should be removed; only productId 20 remains
+        assertNull(savedCart.getCartItem(10L), "Expected productId 10 to be removed from cart");
+        assertNotNull(savedCart.getCartItem(20L), "Expected productId 20 to remain in cart");
+        assertEquals(1, savedCart.getCartItems().size(), "Expected one item to remain in the cart");
+
+        verify(authenticationService).getCurrentCustomer();
+        verify(cartRepository).findByCustomerId(customer.getId());
+        verify(cartRepository).save(savedCart);
+    }
+
+    @Test
+    @DisplayName("removeItemFromCart: when item not in cart, throws ProductNotInCartException")
+    void removeItemFromCart_whenItemNotInCart_throwsException() {
+
+        var customer = getCustomer();
         var cart = new Cart();
-        cart.setId(id);
+        cart.setId(3L);
+        cart.setCustomer(customer);
+        // no items added to the cart
+
+        when(authenticationService.getCurrentCustomer()).thenReturn(customer);
+        when(cartRepository.findByCustomerId(customer.getId())).thenReturn(cart);
+
+        assertThrows(
+                ProductNotInCartException.class, () -> cartService.removeItemFromCart(99L));
+
+        verify(authenticationService).getCurrentCustomer();
+        verify(cartRepository).findByCustomerId(customer.getId());
+        verify(cartRepository, never()).save(any());
+    }
+
+    private Cart getCart(Customer customer) {
+        var cart = new Cart();
+        cart.setId(100L);
         cart.setCustomer(customer);
 
         var p1 = new Product();
