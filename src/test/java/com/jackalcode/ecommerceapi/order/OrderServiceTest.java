@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -183,6 +184,71 @@ public class OrderServiceTest {
         verify(cartRepository).findById(missingCartId);
         verify(orderRepository, never()).save(any());
         verify(paymentService, never()).createCheckoutSession(any());
+    }
+
+    @Test
+    @DisplayName("getOrders: returns all orders when current customer is admin")
+    void getOrders_withAdmin_returnsAllOrders() {
+
+        var admin = new Customer();
+        admin.setId(1L);
+        admin.setRole(Role.ADMIN);
+
+        var customerA = new Customer();
+        customerA.setId(10L);
+
+        var customerB = new Customer();
+        customerB.setId(20L);
+
+        var orderA = new Order();
+        orderA.setId(100L);
+        orderA.setCustomer(customerA);
+
+        var orderB = new Order();
+        orderB.setId(200L);
+        orderB.setCustomer(customerB);
+
+        when(authenticationService.getCurrentCustomer()).thenReturn(admin);
+        when(orderRepository.findAll()).thenReturn(List.of(orderA, orderB));
+
+        List<OrderResponse> results = orderService.getOrders();
+
+        assertAll(
+                () -> assertNotNull(results),
+                () -> assertEquals(2, results.size()),
+                () -> assertTrue(results.stream().anyMatch(r -> r.id().equals(100L) && r.customerId().equals(10L))),
+                () -> assertTrue(results.stream().anyMatch(r -> r.id().equals(200L) && r.customerId().equals(20L)))
+        );
+
+        verify(authenticationService).getCurrentCustomer();
+        verify(orderRepository).findAll();
+        verify(orderRepository, never()).findAllByCustomerId(anyLong());
+    }
+
+    @Test
+    @DisplayName("getOrders: returns only current customer's orders when not admin")
+    void getOrders_whenNotAdmin_returnsOnlyUsersOrders() {
+
+        var customer = getCustomer();
+
+        var customerOrder = new Order();
+        customerOrder.setId(300L);
+        customerOrder.setCustomer(customer);
+
+        when(authenticationService.getCurrentCustomer()).thenReturn(customer);
+        when(orderRepository.findAllByCustomerId(customer.getId())).thenReturn(List.of(customerOrder));
+
+        List<OrderResponse> results = orderService.getOrders();
+
+        assertAll(
+                () -> assertNotNull(results),
+                () -> assertEquals(1, results.size()),
+                () -> assertEquals(300L, results.getFirst().id()),
+                () -> assertEquals(7L, results.getFirst().customerId()));
+
+        verify(authenticationService).getCurrentCustomer();
+        verify(orderRepository).findAllByCustomerId(7L);
+        verify(orderRepository, never()).findAll();
     }
 
     private Customer getCustomer() {

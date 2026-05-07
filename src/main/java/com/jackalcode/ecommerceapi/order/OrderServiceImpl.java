@@ -51,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
         var order = generateOrder(cart);
         orderRepository.save(order);
 
-        //Create checkout session
+        //Create a checkout session
         try {
             CheckoutSession checkoutSession = paymentService.createCheckoutSession(order);
             cart.clearItems();
