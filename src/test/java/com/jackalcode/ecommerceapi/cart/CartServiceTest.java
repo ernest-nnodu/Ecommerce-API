@@ -1,6 +1,7 @@
 package com.jackalcode.ecommerceapi.cart;
 
 import com.jackalcode.ecommerceapi.customer.Customer;
+import com.jackalcode.ecommerceapi.exceptions.ProductNotInCartException;
 import com.jackalcode.ecommerceapi.product.Product;
 import com.jackalcode.ecommerceapi.product.ProductRepository;
 import com.jackalcode.ecommerceapi.security.AuthenticationService;
@@ -17,8 +18,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class CartServiceTest {
@@ -47,12 +47,7 @@ public class CartServiceTest {
     void addItemToCart_createsNewItemAndReturnsResponse() {
 
         Long productId = 10L;
-        var customer = Customer.builder()
-                .id(1L)
-                .firstName("John")
-                .lastName("Doe")
-                .email("john@mail.com")
-                .build();
+        var customer = getCustomer();
 
         var cart = new Cart();
         cart.setId(1L);
@@ -95,12 +90,7 @@ public class CartServiceTest {
     void addItemToCart_whenItemExists_incrementsQuantity() {
 
         Long productId = 20L;
-        var customer = Customer.builder()
-                .id(2L)
-                .firstName("Alice")
-                .lastName("Smith")
-                .email("alice@mail.com")
-                .build();
+        var customer = getCustomer();
 
         var cart = new Cart();
         cart.setId(2L);
@@ -146,12 +136,7 @@ public class CartServiceTest {
     @DisplayName("getCart: returns mapped CartResponse for a cart with items")
     void getCart_withItems_returnsMappedCartResponse() {
 
-        var customer = Customer.builder()
-                .id(1L)
-                .firstName("John")
-                .lastName("Doe")
-                .email("john@mail.com")
-                .build();
+        var customer = getCustomer();
 
         var cart = getCart(100L, customer);
 
@@ -180,12 +165,7 @@ public class CartServiceTest {
     @DisplayName("getCart: returns empty CartResponse when cart has no items")
     void getCart_returnsEmptyCart_whenNoItems() {
 
-        var customer = Customer.builder()
-                .id(2L)
-                .firstName("Alice")
-                .lastName("Smith")
-                .email("alice@mail.com")
-                .build();
+        var customer = getCustomer();
 
         var cart = new Cart();
         cart.setId(200L);
@@ -207,6 +187,85 @@ public class CartServiceTest {
 
         verify(authenticationService).getCurrentCustomer();
         verify(cartRepository).findByCustomerId(customer.getId());
+    }
+
+    @Test
+    @DisplayName("updateCart: updates item quantity when item exists and returns updated response")
+    void updateCart_whenItemExists_updatesQuantityAndReturnsResponse() {
+        
+        Long productId = 20L;
+        var customer = getCustomer();
+
+        var cart = new Cart();
+        cart.setId(2L);
+        cart.setCustomer(customer);
+
+        var product = new Product();
+        product.setId(productId);
+        product.setName("Book");
+        product.setPrice(new BigDecimal("9.99"));
+
+        // create existing CartItem with quantity 2 and add to cart
+        var existingItem = new CartItem();
+        existingItem.setId(3L);
+        existingItem.setProduct(product);
+        existingItem.setQuantity(2);
+        cart.addItem(existingItem);
+
+        when(authenticationService.getCurrentCustomer()).thenReturn(customer);
+        when(cartRepository.findByCustomerId(customer.getId())).thenReturn(cart);
+        when(cartRepository.save(any(Cart.class))).thenAnswer(
+                invocation -> invocation.getArgument(0));
+
+        var request = new UpdateCartRequest(5);
+
+        CartItemResponse response = cartService.updateCart(productId, request);
+
+        // Assert: quantity updated to 5 and total price = 9.99 * 5 = 49.95
+        assertAll(
+                () -> assertNotNull(response),
+                () -> assertEquals(productId, response.product().id()),
+                () -> assertEquals(5, response.quantity()),
+                () -> assertEquals(new BigDecimal("49.95"), response.totalPrice())
+        );
+
+        verify(authenticationService).getCurrentCustomer();
+        verify(cartRepository).findByCustomerId(customer.getId());
+        verify(cartRepository).save(any(Cart.class));
+    }
+
+    @Test
+    @DisplayName("updateCart: when item not in cart, throws ProductNotInCartException")
+    void updateCart_whenItemNotInCart_throwsException() {
+
+        Long productId = 99L;
+        var customer = getCustomer();
+
+        var cart = new Cart();
+        cart.setId(3L);
+        cart.setCustomer(customer);
+        // no items added to cart
+
+        when(authenticationService.getCurrentCustomer()).thenReturn(customer);
+        when(cartRepository.findByCustomerId(customer.getId())).thenReturn(cart);
+
+        var request = new UpdateCartRequest(2);
+
+        assertThrows(ProductNotInCartException.class,
+                () -> cartService.updateCart(productId, request));
+
+        verify(authenticationService).getCurrentCustomer();
+        verify(cartRepository).findByCustomerId(customer.getId());
+        verify(cartRepository, never()).save(any());
+    }
+
+    private Customer getCustomer() {
+        return Customer.builder()
+                .id(2L)
+                .firstName("Alice")
+                .lastName("Smith")
+                .email("alice@mail.com")
+                .build();
     }
 
     private Cart getCart(Long id, Customer customer) {
