@@ -6,6 +6,8 @@ import com.jackalcode.ecommerceapi.cart.CartRepository;
 import com.jackalcode.ecommerceapi.customer.Customer;
 import com.jackalcode.ecommerceapi.exceptions.CartNotFoundException;
 import com.jackalcode.ecommerceapi.exceptions.CheckoutException;
+import com.jackalcode.ecommerceapi.exceptions.CustomerNotAuthorizedException;
+import com.jackalcode.ecommerceapi.exceptions.OrderNotFoundException;
 import com.jackalcode.ecommerceapi.payment.PaymentRepository;
 import com.jackalcode.ecommerceapi.payment.PaymentService;
 import com.jackalcode.ecommerceapi.product.Product;
@@ -249,6 +251,101 @@ public class OrderServiceTest {
         verify(authenticationService).getCurrentCustomer();
         verify(orderRepository).findAllByCustomerId(7L);
         verify(orderRepository, never()).findAll();
+    }
+
+    @Test
+    @DisplayName("getOrder: returns order when current customer is the owner")
+    void getOrder_whenOwner_returnsOrderResponse() {
+
+        Long orderId = 5L;
+        var owner = getCustomer();
+
+        var order = new Order();
+        order.setId(orderId);
+        order.setCustomer(owner);
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+        when(authenticationService.getCurrentCustomer()).thenReturn(owner);
+
+        OrderResponse resp = orderService.getOrder(orderId);
+
+        assertAll(
+                () -> assertNotNull(resp),
+                () -> assertEquals(orderId, resp.id()),
+                () -> assertEquals(7L, resp.customerId())
+        );
+
+        verify(orderRepository).findById(orderId);
+        verify(authenticationService).getCurrentCustomer();
+    }
+
+    @Test
+    @DisplayName("getOrder: returns order for admin regardless of owner")
+    void getOrder_whenAdmin_returnsOrderResponse() {
+
+        Long orderId = 600L;
+        var owner = getCustomer();
+
+        var admin = new Customer();
+        admin.setId(1L);
+        admin.setRole(Role.ADMIN);
+
+        var order = new Order();
+        order.setId(orderId);
+        order.setCustomer(owner);
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+        when(authenticationService.getCurrentCustomer()).thenReturn(admin);
+
+        OrderResponse resp = orderService.getOrder(orderId);
+
+        assertAll(
+                () -> assertNotNull(resp),
+                () -> assertEquals(orderId, resp.id()),
+                () -> assertEquals(7L, resp.customerId())
+        );
+
+        verify(orderRepository).findById(orderId);
+        verify(authenticationService).getCurrentCustomer();
+    }
+
+    @Test
+    @DisplayName("getOrder: throws CustomerNotAuthorizedException when not owner and not admin")
+    void getOrder_whenNotAuthorized_throwsException() {
+
+        Long orderId = 700L;
+        var owner = getCustomer();
+
+        var other = new Customer();
+        other.setId(302L);
+        other.setRole(Role.USER);
+
+        var order = new Order();
+        order.setId(orderId);
+        order.setCustomer(owner);
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+        when(authenticationService.getCurrentCustomer()).thenReturn(other);
+
+        assertThrows(CustomerNotAuthorizedException.class,
+                () -> orderService.getOrder(orderId));
+
+        verify(orderRepository).findById(orderId);
+        verify(authenticationService).getCurrentCustomer();
+    }
+
+    @Test
+    @DisplayName("getOrder: throws OrderNotFoundException when order does not exist")
+    void getOrder_whenOrderMissing_throwsOrderNotFoundException() {
+
+        Long missingId = 99L;
+        when(orderRepository.findById(missingId)).thenReturn(Optional.empty());
+
+        assertThrows(OrderNotFoundException.class,
+                () -> orderService.getOrder(missingId));
+
+        verify(orderRepository).findById(missingId);
+        verify(authenticationService, never()).getCurrentCustomer();
     }
 
     private Customer getCustomer() {
