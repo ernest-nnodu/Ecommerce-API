@@ -50,9 +50,7 @@ public class CartServiceTest {
         Long productId = 10L;
         var customer = getCustomer();
 
-        var cart = new Cart();
-        cart.setId(1L);
-        cart.setCustomer(customer);
+        var cart = getEmptyCart(1L, customer);
 
         var product = new Product();
         product.setId(productId);
@@ -93,9 +91,7 @@ public class CartServiceTest {
         Long productId = 20L;
         var customer = getCustomer();
 
-        var cart = new Cart();
-        cart.setId(2L);
-        cart.setCustomer(customer);
+        var cart = getEmptyCart(2L, customer);
 
         var product = new Product();
         product.setId(productId);
@@ -134,12 +130,12 @@ public class CartServiceTest {
     }
 
     @Test
-    @DisplayName("getCart: returns mapped CartResponse for a cart with items")
+    @DisplayName("getCartWithItems: returns mapped CartResponse for a cart with items")
     void getCart_withItems_returnsMappedCartResponse() {
 
         var customer = getCustomer();
 
-        var cart = getCart(customer);
+        var cart = getCartWithItems(customer);
 
         when(authenticationService.getCurrentCustomer()).thenReturn(customer);
         when(cartRepository.findByCustomerId(customer.getId())).thenReturn(cart);
@@ -163,14 +159,12 @@ public class CartServiceTest {
     }
 
     @Test
-    @DisplayName("getCart: returns empty CartResponse when cart has no items")
+    @DisplayName("getCartWithItems: returns empty CartResponse when cart has no items")
     void getCart_returnsEmptyCart_whenNoItems() {
 
         var customer = getCustomer();
 
-        var cart = new Cart();
-        cart.setId(200L);
-        cart.setCustomer(customer);
+        var cart = getEmptyCart(200L, customer);
         // no items added
 
         when(authenticationService.getCurrentCustomer()).thenReturn(customer);
@@ -197,9 +191,7 @@ public class CartServiceTest {
         Long productId = 20L;
         var customer = getCustomer();
 
-        var cart = new Cart();
-        cart.setId(2L);
-        cart.setCustomer(customer);
+        var cart = getEmptyCart(2L, customer);
 
         var product = new Product();
         product.setId(productId);
@@ -242,9 +234,7 @@ public class CartServiceTest {
         Long productId = 99L;
         var customer = getCustomer();
 
-        var cart = new Cart();
-        cart.setId(3L);
-        cart.setCustomer(customer);
+        var cart = getEmptyCart(3L, customer);
         // no items added to cart
 
         when(authenticationService.getCurrentCustomer()).thenReturn(customer);
@@ -274,7 +264,7 @@ public class CartServiceTest {
     void removeItemFromCart_whenItemExists_removesExistingItemAndSavesCart() {
 
         var customer = getCustomer();
-        var cart = getCart(customer); // contains items for product ids 10 and 20
+        var cart = getCartWithItems(customer); // contains items for product ids 10 and 20
 
         when(authenticationService.getCurrentCustomer()).thenReturn(customer);
         when(cartRepository.findByCustomerId(customer.getId())).thenReturn(cart);
@@ -303,9 +293,7 @@ public class CartServiceTest {
     void removeItemFromCart_whenItemNotInCart_throwsException() {
 
         var customer = getCustomer();
-        var cart = new Cart();
-        cart.setId(3L);
-        cart.setCustomer(customer);
+        var cart = getEmptyCart(3L, customer);
         // no items added to the cart
 
         when(authenticationService.getCurrentCustomer()).thenReturn(customer);
@@ -319,10 +307,76 @@ public class CartServiceTest {
         verify(cartRepository, never()).save(any());
     }
 
-    private Cart getCart(Customer customer) {
+    @Test
+    @DisplayName("clearCart: clears items from a populated cart and saves it")
+    void clearCart_withItems_clearsAndSavesCart() {
+
+        var customer = getCustomer();
+        var cart = getCartWithItems(customer); // contains two items
+
+        when(authenticationService.getCurrentCustomer()).thenReturn(customer);
+        when(cartRepository.findByCustomerId(customer.getId())).thenReturn(cart);
+        when(cartRepository.save(any(Cart.class))).thenAnswer(
+                invocation -> invocation.getArgument(0));
+
+        cartService.clearCart();
+
+        // Assert - capture saved cart and verify it's empty
+        ArgumentCaptor<Cart> captor = ArgumentCaptor.forClass(Cart.class);
+        verify(cartRepository).save(captor.capture());
+        Cart savedCart = captor.getValue();
+
+        assertAll(
+                () -> assertNotNull(savedCart),
+                () -> assertTrue(savedCart.getCartItems().isEmpty(), "Expected no cart items after clear"),
+                () -> assertNull(savedCart.getCartItem(10L), "No item should remain for productId 10"),
+                () -> assertNull(savedCart.getCartItem(20L), "No item should remain for productId 20")
+        );
+
+        verify(authenticationService).getCurrentCustomer();
+        verify(cartRepository).findByCustomerId(customer.getId());
+        verify(cartRepository).save(savedCart);
+    }
+
+    @Test
+    @DisplayName("clearCart: when cart is already empty, still saves empty cart")
+    void clearCart_whenAlreadyEmpty_savesEmptyCart() {
+
+        var customer = getCustomer();
+        var cart = getEmptyCart(3L, customer);
+        // No items added to the cart
+
+        when(authenticationService.getCurrentCustomer()).thenReturn(customer);
+        when(cartRepository.findByCustomerId(customer.getId())).thenReturn(cart);
+        when(cartRepository.save(any(Cart.class))).thenAnswer(
+                invocation -> invocation.getArgument(0));
+
+        cartService.clearCart();
+
+        // Assert - saved cart remains empty
+        ArgumentCaptor<Cart> captor = ArgumentCaptor.forClass(Cart.class);
+        verify(cartRepository).save(captor.capture());
+        Cart saved = captor.getValue();
+
+        assertAll(
+                () -> assertNotNull(saved),
+                () -> assertTrue(saved.getCartItems().isEmpty(), "Expected cart to remain empty"),
+                () -> assertEquals(3L, saved.getId())
+        );
+
+        verify(authenticationService).getCurrentCustomer();
+        verify(cartRepository).findByCustomerId(customer.getId());
+    }
+
+    private Cart getEmptyCart(long id, Customer customer) {
         var cart = new Cart();
-        cart.setId(100L);
+        cart.setId(id);
         cart.setCustomer(customer);
+        return cart;
+    }
+
+    private Cart getCartWithItems(Customer customer) {
+        var cart = getEmptyCart(100L, customer);
 
         var p1 = new Product();
         p1.setId(10L);
