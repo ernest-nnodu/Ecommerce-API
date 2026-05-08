@@ -8,8 +8,7 @@ import com.jackalcode.ecommerceapi.exceptions.CartNotFoundException;
 import com.jackalcode.ecommerceapi.exceptions.CheckoutException;
 import com.jackalcode.ecommerceapi.exceptions.CustomerNotAuthorizedException;
 import com.jackalcode.ecommerceapi.exceptions.OrderNotFoundException;
-import com.jackalcode.ecommerceapi.payment.PaymentRepository;
-import com.jackalcode.ecommerceapi.payment.PaymentService;
+import com.jackalcode.ecommerceapi.payment.*;
 import com.jackalcode.ecommerceapi.product.Product;
 import com.jackalcode.ecommerceapi.security.AuthenticationService;
 import com.jackalcode.ecommerceapi.security.Role;
@@ -23,7 +22,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -346,6 +347,87 @@ public class OrderServiceTest {
 
         verify(orderRepository).findById(missingId);
         verify(authenticationService, never()).getCurrentCustomer();
+    }
+
+    @Test
+    @DisplayName("handleWebhookEvent: when payment is successful, saves Payment and marks Order as PAID")
+    void handleWebhookEvent_whenPaymentSuccess_updatesOrderAndSavesPayment() {
+        Long orderId = 9L;
+
+        // existing order in DB (initially PENDING)
+        var order = new Order();
+        order.setId(orderId);
+        order.setStatus(OrderStatus.PENDING);
+        order.setTotalAmount(BigDecimal.valueOf(123.45));
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+        when(paymentService.processWebhookRequest(any(WebhookRequest.class)))
+                .thenReturn(new PaymentResponse(orderId, PaymentStatus.SUCCESS));
+
+        orderService.handleWebhookEvent(
+                new WebhookRequest(Map.of("Stripe-Signature", "sig"), "payload"));
+
+        // capture saved payment and order
+        ArgumentCaptor<Payment> paymentCaptor = ArgumentCaptor.forClass(Payment.class);
+        ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
+
+        verify(paymentRepository).save(paymentCaptor.capture());
+        verify(orderRepository, atLeastOnce()).save(orderCaptor.capture()); // save may be called elsewhere; atLeastOnce is safe
+
+        Payment savedPayment = paymentCaptor.getValue();
+        Order savedOrder = orderCaptor.getValue();
+
+        assertAll(
+                () -> assertEquals(PaymentStatus.SUCCESS, savedPayment.getStatus()),
+                () -> assertEquals(order.getTotalAmount(), savedPayment.getAmount()),
+                () -> assertSame(order, savedPayment.getOrder()), // payment references the same order instance
+                () -> assertEquals(OrderStatus.PAID, savedOrder.getStatus())
+        );
+    }
+
+    @Test
+    @DisplayName("handleWebhookEvent: when payment fails, saves Payment and marks Order as FAILED")
+    void handleWebhookEvent_whenPaymentFailed_updatesOrderToFailedAndSavesPayment() {
+        Long orderId = 9L;
+
+        var order = new Order();
+        order.setId(orderId);
+        order.setStatus(OrderStatus.PENDING);
+        order.setTotalAmount(BigDecimal.valueOf(50.00));
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+        when(paymentService.processWebhookRequest(any(WebhookRequest.class)))
+                .thenReturn(new PaymentResponse(orderId, PaymentStatus.FAILED));
+
+        orderService.handleWebhookEvent(
+                new WebhookRequest(Map.of("Stripe-Signature", "sig"), "payload"));
+
+        ArgumentCaptor<Payment> paymentCaptor = ArgumentCaptor.forClass(Payment.class);
+        ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
+
+        verify(paymentRepository).save(paymentCaptor.capture());
+        verify(orderRepository, atLeastOnce()).save(orderCaptor.capture());
+
+        Payment savedPayment = paymentCaptor.getValue();
+        Order savedOrder = orderCaptor.getValue();
+
+        assertAll(
+                () -> assertEquals(PaymentStatus.FAILED, savedPayment.getStatus()),
+                () -> assertEquals(order.getTotalAmount(), savedPayment.getAmount()),
+                () -> assertEquals(OrderStatus.FAILED, savedOrder.getStatus())
+        );
+    }
+
+    @Test
+    @DisplayName("handleWebhookEvent: when paymentService returns null, does nothing")
+    void handleWebhookEvent_whenPaymentResponseNull_doesNothing() {
+        when(paymentService.processWebhookRequest(any(WebhookRequest.class))).thenReturn(null);
+
+        orderService.handleWebhookEvent(
+                new WebhookRequest(Map.of("Stripe-Signature", "sig"), "payload"));
+
+        verifyNoInteractions(paymentRepository);
+        verify(orderRepository, never()).save(any());
     }
 
     private Customer getCustomer() {
