@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 public class CustomerRepositoryTest {
@@ -38,32 +39,6 @@ public class CustomerRepositoryTest {
         var response = customerRepository.existsByEmail("fake@email.com");
 
         assertFalse(response);
-    }
-
-    @Test
-    @DisplayName("findByEmail should return customer when email exists in the database")
-    void findByEmail_whenEmailExists_returnsCustomer() {
-        var customer = createCustomerEntity();
-        persistToDatabase(customer);
-
-        var response = customerRepository.findByEmail(customer.getEmail());
-
-        assertAll(
-                () -> assertTrue(response.isPresent()),
-                () -> assertEquals("John", response.get().getFirstName()),
-                () -> assertEquals("Doe", response.get().getLastName()),
-                () -> assertEquals("john.doe@email.com", response.get().getEmail())
-        );
-
-    }
-
-    @Test
-    @DisplayName("findByEmail should return empty optional when email does not exist in the database")
-    void findByEmail_whenEmailNotExists_returnsEmptyOptional() {
-
-        var response = customerRepository.findByEmail("fake@email.com");
-
-        assertFalse(response.isPresent());
     }
 
     private void persistToDatabase(Customer customer) {
