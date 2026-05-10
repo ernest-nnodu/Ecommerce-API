@@ -1,0 +1,27 @@
+spring:
+    application:
+        name: ecommerce-store
+    datasource:
+        url: jdbc:mysql://localhost:3306/ecommerce?createDatabaseIfNotExist=true
+        username: springstudent
+        password: springstudent
+    jpa:
+        show-sql: true
+    jwt:
+        secret: ${JWT_SECRET}
+        accessTokenExpiration: 7_200_000 #2hrs
+        refreshTokenExpiration: 604_800_000 #7days
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health,info,metrics
+    endpoint:
+        health:
+            show-components: never
+            probes:
+                enabled: true
+stripe:
+    secret: ${STRIPE_SECRET}
+    webhookSecret: ${STRIPE_WEBHOOK_SECRET}
+websiteUrl: http://localhost:4242

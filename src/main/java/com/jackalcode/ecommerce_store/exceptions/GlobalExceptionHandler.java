@@ -1,0 +1,130 @@
+package com.jackalcode.ecommerce_store.exceptions;
+
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(CustomerNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleCustomerNotFoundException(
+            CustomerNotFoundException ex, HttpServletRequest request) {
+
+        return new ApiError(ErrorCode.CUSTOMER_NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(CustomerAlreadyExistException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleCustomerAlreadyExistException(
+            CustomerAlreadyExistException ex, HttpServletRequest request) {
+
+        return new ApiError(ErrorCode.CUSTOMER_ALREADY_EXISTS, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(CustomerNotAuthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiError handleCustomerNotAuthorizedException(CustomerNotAuthorizedException ex,
+                                                         HttpServletRequest request) {
+
+        return new ApiError(ErrorCode.CUSTOMER_NOT_AUTHORIZED, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(CategoryAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleCategoryAlreadyExistException(CategoryAlreadyExistsException ex,
+                                                        HttpServletRequest request) {
+        return new ApiError(ErrorCode.CATEGORY_ALREADY_EXISTS, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleCategoryAlreadyExistException(CategoryNotFoundException ex,
+                                                        HttpServletRequest request) {
+        return new ApiError(ErrorCode.CATEGORY_NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleProductNotFoundException(ProductNotFoundException ex,
+                                                   HttpServletRequest request) {
+        return new ApiError(ErrorCode.PRODUCT_NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(ProductAlreadyExistException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleProductNotFoundException(ProductAlreadyExistException ex,
+                                                   HttpServletRequest request) {
+        return new ApiError(ErrorCode.PRODUCT_ALREADY_EXISTS, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(CartNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleCartNotFoundException(CartNotFoundException ex,
+                                                HttpServletRequest request) {
+        return new ApiError(ErrorCode.CART_NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(ProductNotInCartException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleProductNotInCartException(ProductNotInCartException ex,
+                                                    HttpServletRequest request) {
+        return new ApiError(ErrorCode.PRODUCT_NOT_IN_CART, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(CartEmptyException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleCartEmptyException(CartEmptyException ex, HttpServletRequest request) {
+
+        return new ApiError(ErrorCode.CART_EMPTY, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(OrderNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleOrderNotFoundException(OrderNotFoundException ex,
+                                                 HttpServletRequest request) {
+        return new ApiError(ErrorCode.ORDER_NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException ex) {
+
+        var errors = new HashMap<String, String>();
+
+        ex.getBindingResult().getFieldErrors().forEach(
+                (error) -> errors.put(error.getField(), error.getDefaultMessage()));
+
+        return errors;
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Void> handleBadCredentialsException() {
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @ExceptionHandler(CheckoutException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiError handleCheckoutException(CheckoutException ex, HttpServletRequest request) {
+
+        return new ApiError(ErrorCode.CHECKOUT_UNSUCCESSFUL, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiError handleException(Exception ex, HttpServletRequest request) {
+
+        return new ApiError(ErrorCode.EXCEPTION, ex.getMessage(), request.getRequestURI());
+    }
+}
