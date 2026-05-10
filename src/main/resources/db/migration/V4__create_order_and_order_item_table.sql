@@ -3,7 +3,7 @@ CREATE TABLE orders (
     total_amount DECIMAL(10, 2) NOT NULL,
     date DATETIME NOT NULL,
     customer_id BIGINT NOT NULL,
-    FOREIGN KEY orders_customers (customer_id)
+    CONSTRAINT orders_customers FOREIGN KEY (customer_id)
                     REFERENCES customers(id)
                     ON UPDATE CASCADE
 );
@@ -14,6 +14,6 @@ CREATE TABLE order_items (
     price DECIMAL(5, 2) NOT NULL,
     order_id BIGINT NOT NULL,
     product_id BIGINT NOT NULL,
-    FOREIGN KEY order_items_orders (order_id) REFERENCES orders(id),
-    FOREIGN KEY order_items_products (product_id) REFERENCES products(id)
+    CONSTRAINT order_items_orders FOREIGN KEY (order_id) REFERENCES orders(id),
+    CONSTRAINT order_items_products FOREIGN KEY (product_id) REFERENCES products(id)
 );
