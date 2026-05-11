@@ -1,7 +1,5 @@
-package com.jackalcode.ecommerce_store.cart;
+package com.jackalcode.ecommerce_store.category;
 
-import com.jackalcode.ecommerce_store.category.Category;
-import com.jackalcode.ecommerce_store.category.CategoryRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

@@ -81,7 +81,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductResponse> searchProducts(ProductFilter productFilter) {
 
-        var specification = Specification.where(
+        var specification = Specification.allOf(
                 ProductSpecifications.hasName(productFilter.name())
                         .and(ProductSpecifications.hasMinPrice(productFilter.minPrice()))
                         .and(ProductSpecifications.hasMaxPrice(productFilter.maxPrice()))
