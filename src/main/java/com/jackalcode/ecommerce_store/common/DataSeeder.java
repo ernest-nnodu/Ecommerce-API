@@ -81,7 +81,7 @@ public class DataSeeder implements CommandLineRunner {
 
         for (int i = 0; i < 10; i++) {
             Category category = new Category();
-            category.setName(randomCategory());
+            category.setName(getCategory(i));
             categories.add(category);
         }
 
@@ -132,12 +132,12 @@ public class DataSeeder implements CommandLineRunner {
         return first.toLowerCase() + "." + last.toLowerCase() + random.nextInt(1000) + "@mail.com";
     }
 
-    private String randomCategory() {
+    private String getCategory(int index) {
         String[] categories = {
                 "Electronics", "Books", "Clothing", "Home", "Toys",
                 "Sports", "Beauty", "Automotive", "Garden", "Groceries"
         };
-        return categories[random.nextInt(categories.length)];
+        return categories[index % categories.length];
     }
 
     private String randomProductName() {
