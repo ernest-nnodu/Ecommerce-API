@@ -13,9 +13,11 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     boolean existsByNameIgnoreCase(String name);
 
+    @Override
     @EntityGraph(attributePaths = {"category"})
     List<Product> findAll();
 
+    @Override
     @EntityGraph(attributePaths = {"category"})
     List<Product> findAll(Specification<Product> spec);
 }
