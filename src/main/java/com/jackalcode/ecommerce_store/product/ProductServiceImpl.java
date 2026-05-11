@@ -40,12 +40,12 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductResponse createProduct(ProductRequest productRequest) {
 
-        //Check if product already exist in the database
-        checkProductAlreadyExist(productRequest.name());
-
         Category category = getCategory(productRequest.categoryId());
 
-        //Create new product and save to database
+        //Check if the product already exists in the database
+        checkProductAlreadyExist(productRequest.name(), category);
+
+        //Create a new product and save to the database
         Product newProduct = productMapper.toProduct(productRequest);
         newProduct.setCategory(category);
         return productMapper.toProductResponse(productRepository.save(newProduct));
@@ -56,14 +56,14 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse updateProduct(Long id, ProductRequest productRequest) {
 
         Product existingProduct = getProductEntity(id);
+        Category category = getCategory(productRequest.categoryId());
 
-        //If product name need updating, check if name already exist in the database
+        //If the product name needs updating, check if the name already exists in the database
         if (!existingProduct.getName().equalsIgnoreCase(productRequest.name())) {
-            checkProductAlreadyExist(productRequest.name());
+            checkProductAlreadyExist(productRequest.name(), category);
         }
 
-        //Update product and save to database
-        Category category = getCategory(productRequest.categoryId());
+        //Update product and save to the database
         productMapper.updateProduct(productRequest, existingProduct);
         existingProduct.setCategory(category);
 
@@ -101,8 +101,8 @@ public class ProductServiceImpl implements ProductService {
         );
     }
 
-    private void checkProductAlreadyExist(String productName) {
-        if (productRepository.existsByNameIgnoreCase(productName)) {
+    private void checkProductAlreadyExist(String productName, Category category) {
+        if (productRepository.existsByNameIgnoreCaseAndCategory(productName, category)) {
             throw new ProductAlreadyExistException("Product already exist with name: " + productName);
         }
     }

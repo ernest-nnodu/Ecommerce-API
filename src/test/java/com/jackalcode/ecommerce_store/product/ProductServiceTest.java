@@ -136,7 +136,8 @@ public class ProductServiceTest {
         ProductRequest request = new ProductRequest("Phone", new BigDecimal("199.99"),
                 10L, 10L);
 
-        when(productRepository.existsByNameIgnoreCase("Phone")).thenReturn(false);
+        when(productRepository.existsByNameIgnoreCaseAndCategory(
+                "Phone", category)).thenReturn(false);
         when(categoryRepository.findById(10L)).thenReturn(Optional.of(category));
 
         // simulate DB assigning id on save
@@ -157,7 +158,7 @@ public class ProductServiceTest {
                 () -> assertEquals("Electronics", response.categoryName())
         );
 
-        verify(productRepository).existsByNameIgnoreCase("Phone");
+        verify(productRepository).existsByNameIgnoreCaseAndCategory("Phone", category);
         verify(categoryRepository).findById(10L);
         verify(productRepository).save(any(Product.class));
     }
@@ -166,15 +167,18 @@ public class ProductServiceTest {
     @DisplayName("createProduct: throws ProductAlreadyExistException when name already exists")
     void createProduct_whenNameExists_throwsException() {
 
-        ProductRequest request = new ProductRequest("Phone", new BigDecimal("199.99"), 10L, 10L);
+        ProductRequest request = new ProductRequest(
+                "Phone", new BigDecimal("199.99"), 10L, 10L);
+        Category category = createCategory(10L, "Electronics");
 
-        when(productRepository.existsByNameIgnoreCase("Phone")).thenReturn(true);
+        when(categoryRepository.findById(10L)).thenReturn(Optional.of(category));
+        when(productRepository.existsByNameIgnoreCaseAndCategory("Phone", category)).thenReturn(true);
 
         assertThrows(ProductAlreadyExistException.class,
                 () -> productService.createProduct(request));
 
-        verify(productRepository).existsByNameIgnoreCase("Phone");
-        verify(categoryRepository, never()).findById(anyLong());
+        verify(productRepository).existsByNameIgnoreCaseAndCategory("Phone", category);
+        verify(categoryRepository).findById(category.getId());
         verify(productRepository, never()).save(any());
     }
 
@@ -182,16 +186,16 @@ public class ProductServiceTest {
     @DisplayName("createProduct: throws CategoryNotFoundException when category does not exist")
     void createProduct_whenCategoryNotFound_throwsException() {
 
-        ProductRequest request = new ProductRequest("Phone", new BigDecimal("199.99"), 10L, 999L);
+        ProductRequest request = new ProductRequest(
+                "Phone", new BigDecimal("199.99"), 10L, 99L);
 
-        when(productRepository.existsByNameIgnoreCase("Phone")).thenReturn(false);
-        when(categoryRepository.findById(999L)).thenReturn(Optional.empty());
+        when(categoryRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertThrows(CategoryNotFoundException.class,
                 () -> productService.createProduct(request));
 
-        verify(productRepository).existsByNameIgnoreCase("Phone");
-        verify(categoryRepository).findById(999L);
+        verify(categoryRepository).findById(99L);
+        verify(productRepository, never()).existsByNameIgnoreCaseAndCategory(anyString(), any(Category.class));
         verify(productRepository, never()).save(any());
     }
 
@@ -210,7 +214,8 @@ public class ProductServiceTest {
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(existing));
         // because name is changing, service should check for existence
-        when(productRepository.existsByNameIgnoreCase("NewPhone")).thenReturn(false);
+        when(productRepository.existsByNameIgnoreCaseAndCategory(
+                "NewPhone", newCategory)).thenReturn(false);
         when(categoryRepository.findById(99L)).thenReturn(Optional.of(newCategory));
 
         ProductResponse result = productService.updateProduct(productId, request);
@@ -225,7 +230,7 @@ public class ProductServiceTest {
         );
 
         verify(productRepository).findById(productId);
-        verify(productRepository).existsByNameIgnoreCase("NewPhone");
+        verify(productRepository).existsByNameIgnoreCaseAndCategory("NewPhone", newCategory);
         verify(categoryRepository).findById(99L);
     }
 
@@ -258,15 +263,17 @@ public class ProductServiceTest {
         ProductRequest request = new ProductRequest("ConflictingName",
                 new BigDecimal("299.99"), 5L, 10L);
 
+        when(categoryRepository.findById(10L)).thenReturn(Optional.of(oldCategory));
         when(productRepository.findById(productId)).thenReturn(Optional.of(existing));
-        when(productRepository.existsByNameIgnoreCase("ConflictingName")).thenReturn(true);
+        when(productRepository.existsByNameIgnoreCaseAndCategory(
+                "ConflictingName", oldCategory)).thenReturn(true);
 
         assertThrows(ProductAlreadyExistException.class,
                 () -> productService.updateProduct(productId, request));
 
         verify(productRepository).findById(productId);
-        verify(productRepository).existsByNameIgnoreCase("ConflictingName");
-        verify(categoryRepository, never()).findById(anyLong());
+        verify(productRepository).existsByNameIgnoreCaseAndCategory("ConflictingName", oldCategory);
+        verify(categoryRepository).findById(oldCategory.getId());
     }
 
     @Test
@@ -281,14 +288,13 @@ public class ProductServiceTest {
                 5L, 12345L);
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(existing));
-        when(productRepository.existsByNameIgnoreCase("NewPhone")).thenReturn(false);
         when(categoryRepository.findById(12345L)).thenReturn(Optional.empty());
 
         assertThrows(CategoryNotFoundException.class,
                 () -> productService.updateProduct(productId, request));
 
         verify(productRepository).findById(productId);
-        verify(productRepository).existsByNameIgnoreCase("NewPhone");
+        verify(productRepository, never()).existsByNameIgnoreCaseAndCategory(anyString(), any(Category.class));
         verify(categoryRepository).findById(12345L);
         verify(productRepository, never()).save(any());
     }

@@ -1,5 +1,6 @@
 package com.jackalcode.ecommerce_store.product;
 
+import com.jackalcode.ecommerce_store.category.Category;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +12,7 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
-    boolean existsByNameIgnoreCase(String name);
+    boolean existsByNameIgnoreCaseAndCategory(String productName, Category category);
 
     @Override
     @EntityGraph(attributePaths = {"category"})
