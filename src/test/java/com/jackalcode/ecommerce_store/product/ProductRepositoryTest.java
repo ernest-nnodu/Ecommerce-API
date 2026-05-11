@@ -6,8 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -70,7 +72,6 @@ public class ProductRepositoryTest {
 
         assertFalse(response);
 
-
     }
 
     @Test
@@ -82,31 +83,25 @@ public class ProductRepositoryTest {
         persistToDatabase(category1);
         persistToDatabase(category2);
 
-        Product product1 = createProduct("Product 1", category1);
-        Product product2 = createProduct("Product 2", category2);
-        Product product3 = createProduct("Product 3", category1);
-        Product product4 = createProduct("Product 4", category2);
+        var products = createProducts(List.of(category1, category2));
 
-        persistToDatabase(product1);
-        persistToDatabase(product2);
-        persistToDatabase(product3);
-        persistToDatabase(product4);
+        products.forEach(this::persistToDatabase);
 
-        var products = productRepository.findAll();
+        var productsFound = productRepository.findAll();
 
         assertAll(
-                () -> assertEquals(4, products.size()),
+                () -> assertEquals(4, productsFound.size()),
                 () -> assertTrue(
-                        products.stream().anyMatch(p -> p.getName().equals("Product 1")
+                        productsFound.stream().anyMatch(p -> p.getName().equals("Product 1")
                                 && p.getCategory().getName().equals("Electronics"))),
                 () -> assertTrue(
-                        products.stream().anyMatch(p -> p.getName().equals("Product 2")
+                        productsFound.stream().anyMatch(p -> p.getName().equals("Product 2")
                                 && p.getCategory().getName().equals("Books"))),
                 () -> assertTrue(
-                        products.stream().anyMatch(p -> p.getName().equals("Product 3")
+                        productsFound.stream().anyMatch(p -> p.getName().equals("Product 3")
                                 && p.getCategory().getName().equals("Electronics"))),
                 () -> assertTrue(
-                        products.stream().anyMatch(p -> p.getName().equals("Product 4")
+                        productsFound.stream().anyMatch(p -> p.getName().equals("Product 4")
                                 && p.getCategory().getName().equals("Books")))
         );
     }
@@ -119,11 +114,79 @@ public class ProductRepositoryTest {
 
         assertTrue(products.isEmpty());
     }
+    
+    @Test
+    @DisplayName("findAll should return matching products when search criteria are met")
+    void findAll_whenProductsMatchSearchCriteria_returnsMatchingProducts() {
+        Category category1 = createCategory("Electronics");
+        Category category2 = createCategory("Books");
+
+        persistToDatabase(category1);
+        persistToDatabase(category2);
+
+        var products = createProducts(List.of(category1, category2));
+
+        products.forEach(this::persistToDatabase);
+
+        var specification = Specification.allOf(
+                ProductSpecifications.hasName("Product")
+                        .and(ProductSpecifications.hasMinPrice(BigDecimal.valueOf(5.0)))
+        );
+
+        var matchingProducts = productRepository.findAll(specification);
+
+        assertAll(
+                () -> assertEquals(4, matchingProducts.size()),
+                () -> assertTrue(
+                        matchingProducts
+                                .stream()
+                                .allMatch(p -> p.getName().startsWith("Product"))),
+                () -> assertTrue(
+                        matchingProducts
+                                .stream()
+                                .allMatch(p -> p.getPrice()
+                                        .compareTo(BigDecimal.valueOf(5.0)) >= 0))
+        );
+        
+    }
+
+    @Test
+    @DisplayName("findAll should return empty list when no products match search criteria")
+    void findAll_whenNoProductsMatchSearchCriteria_returnsEmptyList() {
+
+        Category category1 = createCategory("Electronics");
+        Category category2 = createCategory("Books");
+
+        persistToDatabase(category1);
+        persistToDatabase(category2);
+
+        var products = createProducts(List.of(category1, category2));
+
+        products.forEach(this::persistToDatabase);
+
+        var specification = Specification.allOf(
+                ProductSpecifications.hasName("NonExisting")
+                        .and(ProductSpecifications.hasMinPrice(BigDecimal.valueOf(1005.0)))
+        );
+
+        var matchingProducts = productRepository.findAll(specification);
+
+        assertTrue(matchingProducts.isEmpty());
+    }
 
     private void persistToDatabase(Object entity) {
         entityManager.persist(entity);
         entityManager.flush();
         entityManager.clear();
+    }
+
+    private List<Product> createProducts(List<Category> categories) {
+
+        Product product1 = createProduct("Product 1", categories.getFirst());
+        Product product2 = createProduct("Product 2", categories.get(1));
+        Product product3 = createProduct("Product 3", categories.getFirst());
+        Product product4 = createProduct("Product 4", categories.get(1));
+        return List.of(product1, product2, product3, product4);
     }
 
     private Product createProduct(String name, Category category) {
